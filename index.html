@@ -1,0 +1,4256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Surya N - Ethical Hacker, Penetration Tester &amp; B.E. Cyber Security Student, researching API security, IDOR, and automated attack surface intelligence.">
+  <meta name="author" content="Surya N">
+  <meta name="keywords" content="Surya N, Ethical Hacker, Penetration Tester, B.E. Cyber Security, relfood.com, Bug Bounty, IDOR, GraphQL, Domain Security Analyzer, SecureMail, Surface Attack">
+  <meta name="theme-color" content="#04060a">
+
+  <title>Surya N | Ethical Hacker &amp; Penetration Tester</title>
+
+  <!-- Google Fonts: Inter, Orbitron, Rajdhani, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       DESIGN SYSTEM & CSS CUSTOM PROPERTIES
+       Theme: Matrix / Modern Cyberpunk (Green with Black Neon & Cyber Purple)
+       Palette: Deep Obsidian Black, Cyber Toxic Green, Electric Purple
+       ========================================================================== */
+    :root {
+      --bg-darkest: #020503;
+      --bg-primary: #050a06;
+      --bg-secondary: #08140c;
+      --bg-surface: rgba(8, 22, 14, 0.72);
+      --bg-surface-elevated: rgba(12, 30, 19, 0.82);
+      --bg-surface-card: rgba(6, 18, 11, 0.8);
+
+      /* Neon Green & Cyber Purple Accents */
+      --neon-green: #00ff88;
+      --neon-green-light: #6effb9;
+      --neon-green-glow: rgba(0, 255, 136, 0.45);
+      --neon-green-subtle: rgba(0, 255, 136, 0.12);
+
+      --neon-blue: #00ff88; /* mapped to neon green for cohesive styling */
+      --neon-blue-light: #6effb9;
+      --neon-blue-glow: rgba(0, 255, 136, 0.45);
+      --neon-blue-subtle: rgba(0, 255, 136, 0.12);
+
+      --cyber-purple: #b026ff;
+      --cyber-purple-light: #d880ff;
+      --cyber-purple-glow: rgba(176, 38, 255, 0.45);
+      --cyber-purple-subtle: rgba(176, 38, 255, 0.14);
+
+      --neon-emerald: #00ff88;
+      --neon-emerald-glow: rgba(0, 255, 136, 0.45);
+      --cyber-crimson: #f43f5e;
+      --cyber-crimson-glow: rgba(244, 63, 94, 0.4);
+      --cyber-amber: #f59e0b;
+
+      /* Typography */
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-display: 'Orbitron', 'Rajdhani', sans-serif;
+      --font-mono: 'JetBrains Mono', Consolas, monospace;
+
+      /* Text Colors */
+      --text-white: #ffffff;
+      --text-primary: #e6f9ed;
+      --text-secondary: #8fb89e;
+      --text-muted: #577763;
+
+      /* Borders & Glassmorphism */
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-blue: rgba(0, 255, 136, 0.35);
+      --border-purple: rgba(176, 38, 255, 0.35);
+      --glass-blur: blur(16px);
+      --glass-shadow: 0 10px 35px 0 rgba(0, 0, 0, 0.7);
+
+      /* Transitions */
+      --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* CSS Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+      background-color: var(--bg-darkest);
+    }
+
+    body {
+      background-color: var(--bg-darkest);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    ::selection {
+      background: var(--neon-blue);
+      color: var(--bg-darkest);
+      text-shadow: none;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-darkest);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 255, 136, 0.3);
+      border-radius: 4px;
+      border: 1px solid rgba(0, 255, 136, 0.15);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--neon-blue);
+      box-shadow: 0 0 12px var(--neon-blue);
+    }
+
+    /* Background Canvas */
+    #cyber-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.9;
+    }
+
+    /* Subtle Cyber Matrix / Grid Overlay */
+    .cyber-grid-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      background-image: 
+        linear-gradient(rgba(0, 255, 136, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 136, 0.035) 1px, transparent 1px);
+      background-size: 45px 45px;
+      opacity: 0.65;
+    }
+
+    /* Radial Ambient Neon Glows */
+    .ambient-glow-1 {
+      position: fixed;
+      top: -160px;
+      left: -160px;
+      width: 680px;
+      height: 680px;
+      background: radial-gradient(circle, rgba(0, 255, 136, 0.16) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .ambient-glow-2 {
+      position: fixed;
+      bottom: -160px;
+      right: -160px;
+      width: 780px;
+      height: 780px;
+      background: radial-gradient(circle, rgba(176, 38, 255, 0.16) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* App Wrapper */
+    .app-wrapper {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Container */
+    .container {
+      width: 100%;
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ==========================================================================
+       SCROLL REVEAL ANIMATIONS (INTERSECTION OBSERVER)
+       ========================================================================== */
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+
+    .reveal-on-scroll.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==========================================================================
+       TYPOGRAPHY & UTILITIES
+       ========================================================================== */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-display);
+      letter-spacing: 0.03em;
+      line-height: 1.25;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    .text-mono {
+      font-family: var(--font-mono);
+    }
+
+    .neon-text-blue {
+      color: var(--neon-blue);
+      text-shadow: 0 0 14px var(--neon-blue-glow);
+    }
+
+    .neon-text-purple {
+      color: var(--cyber-purple-light);
+      text-shadow: 0 0 14px var(--cyber-purple-glow);
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--neon-blue) 0%, #d8b4fe 50%, var(--cyber-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+      position: relative;
+    }
+
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--neon-blue);
+      background: rgba(0, 255, 136, 0.08);
+      border: 1px solid var(--border-blue);
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      margin-bottom: 0.9rem;
+    }
+
+    .section-tag::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background-color: var(--neon-blue);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--neon-blue);
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.7rem);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-subtitle {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* ==========================================================================
+       CYBER GLITCH ANIMATION ON HERO NAME
+       ========================================================================== */
+    .glitch-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .glitch-text {
+      position: relative;
+      color: var(--text-white);
+      text-shadow: 0 0 20px var(--neon-blue-glow);
+      font-family: var(--font-display);
+      font-weight: 900;
+      letter-spacing: 0.04em;
+    }
+
+    .glitch-text::before,
+    .glitch-text::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      clip: rect(0, 0, 0, 0);
+      pointer-events: none;
+    }
+
+    .glitch-text::before {
+      left: -2px;
+      text-shadow: -2px 0 var(--cyber-crimson);
+      color: var(--text-white);
+    }
+
+    .glitch-text::after {
+      left: 2px;
+      text-shadow: 2px 0 var(--neon-blue);
+      color: var(--text-white);
+    }
+
+    /* Glitch on hover or on class active */
+    .glitch-wrapper:hover .glitch-text::before,
+    .glitch-text.is-glitching::before {
+      animation: glitchAnim1 2s infinite linear alternate-reverse;
+    }
+
+    .glitch-wrapper:hover .glitch-text::after,
+    .glitch-text.is-glitching::after {
+      animation: glitchAnim2 2.5s infinite linear alternate-reverse;
+    }
+
+    @keyframes glitchAnim1 {
+      0% { clip: rect(20px, 9999px, 44px, 0); transform: skew(0.3deg); }
+      15% { clip: rect(62px, 9999px, 80px, 0); transform: skew(-0.5deg); }
+      30% { clip: rect(10px, 9999px, 35px, 0); transform: skew(0.8deg); }
+      45% { clip: rect(78px, 9999px, 95px, 0); transform: skew(-0.2deg); }
+      60% { clip: rect(40px, 9999px, 58px, 0); transform: skew(0.4deg); }
+      75% { clip: rect(85px, 9999px, 110px, 0); transform: skew(-0.6deg); }
+      90% { clip: rect(15px, 9999px, 30px, 0); transform: skew(0.2deg); }
+      100% { clip: rect(50px, 9999px, 70px, 0); transform: skew(0deg); }
+    }
+
+    @keyframes glitchAnim2 {
+      0% { clip: rect(12px, 9999px, 30px, 0); transform: skew(-0.4deg); }
+      20% { clip: rect(48px, 9999px, 65px, 0); transform: skew(0.6deg); }
+      40% { clip: rect(82px, 9999px, 100px, 0); transform: skew(-0.8deg); }
+      60% { clip: rect(24px, 9999px, 45px, 0); transform: skew(0.3deg); }
+      80% { clip: rect(68px, 9999px, 86px, 0); transform: skew(-0.5deg); }
+      100% { clip: rect(5px, 9999px, 22px, 0); transform: skew(0deg); }
+    }
+
+    /* ==========================================================================
+       BUTTONS & SCANNING LIGHT-BEAM EFFECT
+       ========================================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      padding: 0.85rem 1.75rem;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all var(--transition-fast);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      transition: transform var(--transition-fast);
+    }
+
+    .btn:hover svg {
+      transform: translateX(2px);
+    }
+
+    /* Scanning Light-Beam Button (Crucial Requirement) */
+    .btn-scan-beam {
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.95) 0%, rgba(176, 38, 255, 0.95) 100%);
+      color: #020503;
+      box-shadow: 0 0 24px rgba(0, 255, 136, 0.45);
+      font-weight: 800;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .btn-scan-beam::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -120%;
+      width: 60%;
+      height: 200%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.9),
+        rgba(0, 255, 136, 0.95),
+        transparent
+      );
+      transform: rotate(25deg);
+      pointer-events: none;
+      animation: scanBeamContinuous 3.5s infinite ease-in-out;
+    }
+
+    .btn-scan-beam:hover::before {
+      animation: scanBeamContinuous 1.2s infinite ease-in-out;
+    }
+
+    .btn-scan-beam:hover {
+      box-shadow: 0 0 38px rgba(0, 255, 136, 0.85), 0 0 20px rgba(176, 38, 255, 0.65);
+      transform: translateY(-2px);
+      color: #000;
+    }
+
+    @keyframes scanBeamContinuous {
+      0% { left: -120%; }
+      35%, 100% { left: 180%; }
+    }
+
+    .btn-secondary {
+      background: rgba(13, 20, 36, 0.85);
+      color: var(--neon-blue);
+      border-color: var(--border-blue);
+      backdrop-filter: blur(8px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0, 255, 136, 0.12);
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+      transform: translateY(-2px);
+      color: #fff;
+    }
+
+    .btn-purple {
+      background: rgba(176, 38, 255, 0.12);
+      color: var(--cyber-purple-light);
+      border-color: var(--border-purple);
+    }
+
+    .btn-purple:hover {
+      background: rgba(176, 38, 255, 0.24);
+      border-color: var(--cyber-purple);
+      box-shadow: 0 0 20px rgba(176, 38, 255, 0.4);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .btn-sm {
+      padding: 0.55rem 1.1rem;
+      font-size: 0.82rem;
+      border-radius: 6px;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-blue {
+      background: rgba(0, 255, 136, 0.12);
+      color: var(--neon-blue);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+
+    .badge-purple {
+      background: rgba(176, 38, 255, 0.12);
+      color: var(--cyber-purple-light);
+      border: 1px solid rgba(176, 38, 255, 0.3);
+    }
+
+    .badge-green {
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--neon-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-red {
+      background: rgba(244, 63, 94, 0.12);
+      color: var(--cyber-crimson);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    /* Glassmorphism Card Core */
+    .glass-card {
+      background: var(--bg-surface);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.75rem;
+      box-shadow: var(--glass-shadow);
+      position: relative;
+      overflow: hidden;
+      transition: all var(--transition-smooth);
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .glass-card:hover {
+      border-color: var(--border-blue);
+      box-shadow: var(--glass-shadow), 0 0 25px rgba(0, 255, 136, 0.2);
+      transform: translateY(-4px);
+    }
+
+    /* ==========================================================================
+       NAVIGATION BAR
+       ========================================================================== */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      background: rgba(7, 10, 19, 0.85);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border-bottom: 1px solid var(--border-subtle);
+      transition: all var(--transition-fast);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-white);
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: 0.08em;
+    }
+
+    .brand-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.15) 0%, rgba(176, 38, 255, 0.15) 100%);
+      border: 1px solid var(--border-blue);
+      box-shadow: 0 0 12px var(--neon-blue-glow);
+      color: var(--neon-blue);
+    }
+
+    .brand-text span {
+      color: var(--neon-blue);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+      list-style: none;
+    }
+
+    .nav-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      position: relative;
+      transition: color var(--transition-fast);
+      padding: 0.5rem 0;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--neon-blue);
+      box-shadow: 0 0 8px var(--neon-blue);
+      transition: width var(--transition-fast);
+    }
+
+    .nav-link:hover {
+      color: var(--neon-blue);
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: transparent;
+      border: 1px solid var(--border-blue);
+      color: var(--neon-blue);
+      padding: 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* Mobile Drawer */
+    .mobile-drawer {
+      display: none;
+      position: fixed;
+      top: 72px;
+      left: 0;
+      width: 100%;
+      background: rgba(7, 10, 19, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-blue);
+      padding: 1.5rem;
+      z-index: 99;
+    }
+
+    .mobile-drawer.open {
+      display: block;
+    }
+
+    .mobile-nav-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .mobile-nav-links .nav-link {
+      font-size: 1.1rem;
+    }
+
+    /* ==========================================================================
+       HERO SECTION
+       ========================================================================== */
+    .hero-section {
+      min-height: calc(100vh - 72px);
+      display: flex;
+      align-items: center;
+      padding: 4rem 0 5rem;
+      position: relative;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 3.5rem;
+      align-items: center;
+    }
+
+    .hero-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      background: rgba(13, 20, 36, 0.7);
+      border: 1px solid var(--border-blue);
+      padding: 0.45rem 1rem;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.12);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--neon-emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--neon-emerald);
+      animation: pulseGlow 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.35); }
+    }
+
+    .hero-title {
+      font-size: clamp(2.4rem, 5.2vw, 4.2rem);
+      margin-bottom: 0.5rem;
+      line-height: 1.1;
+      font-weight: 900;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.2rem, 2.6vw, 1.85rem);
+      font-family: var(--font-display);
+      margin-bottom: 0.5rem;
+      color: var(--neon-blue);
+      text-shadow: 0 0 16px var(--neon-blue-glow);
+      font-weight: 700;
+    }
+
+    .hero-degree-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: var(--cyber-purple-light);
+      background: rgba(176, 38, 255, 0.1);
+      border: 1px solid var(--border-purple);
+      padding: 0.25rem 0.85rem;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 0 12px var(--cyber-purple-glow);
+    }
+
+    .hero-bio {
+      font-size: 1.08rem;
+      color: var(--text-secondary);
+      margin-bottom: 2.25rem;
+      max-width: 580px;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .metric-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .metric-value {
+      font-family: var(--font-display);
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--neon-blue);
+    }
+
+    .metric-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ==========================================================================
+       HERO MINI-TERMINAL (PROFESSIONAL KALI LINUX TERMINAL)
+       ========================================================================== */
+    .hero-terminal-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .mini-terminal-window {
+      background: rgba(5, 12, 8, 0.94);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-blue);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(0, 255, 136, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: all var(--transition-smooth);
+      position: relative;
+    }
+
+    .mini-terminal-window:hover {
+      border-color: var(--neon-green);
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95), 0 0 45px rgba(0, 255, 136, 0.32);
+      transform: translateY(-2px);
+    }
+
+    /* Realistic Dark Grey Window Header */
+    .mini-term-header {
+      background: #141b16;
+      border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+    }
+
+    .term-window-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .term-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      display: inline-block;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .dot-red {
+      background: #ff5f56;
+      border: 1px solid #e0443e;
+      box-shadow: 0 0 6px rgba(255, 95, 86, 0.5);
+    }
+    .dot-yellow {
+      background: #ffbd2e;
+      border: 1px solid #dea123;
+      box-shadow: 0 0 6px rgba(255, 189, 46, 0.5);
+    }
+    .dot-green {
+      background: #27c93f;
+      border: 1px solid #1aab29;
+      box-shadow: 0 0 6px rgba(39, 201, 63, 0.5);
+    }
+
+    .term-window-controls:hover .term-dot {
+      transform: scale(1.15);
+    }
+
+    .mini-term-title {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #9abfa9;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      letter-spacing: 0.03em;
+    }
+
+    .mini-term-title svg {
+      color: var(--neon-green);
+    }
+
+    .mini-term-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .term-live-tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--neon-green);
+      background: rgba(0, 255, 136, 0.12);
+      border: 1px solid rgba(0, 255, 136, 0.35);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    .term-replay-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-secondary);
+      border-radius: 4px;
+      padding: 0.2rem 0.6rem;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .term-replay-btn:hover {
+      background: rgba(0, 255, 136, 0.2);
+      border-color: var(--neon-green);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+    }
+
+    /* Terminal Body */
+    .mini-term-body {
+      padding: 1.25rem 1.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.83rem;
+      line-height: 1.65;
+      min-height: 330px;
+      max-height: 385px;
+      overflow-y: auto;
+      background: radial-gradient(ellipse at top left, rgba(0, 255, 136, 0.04) 0%, #030805 75%);
+    }
+
+    .term-telemetry-banner {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.95rem;
+      letter-spacing: 0.04em;
+    }
+
+    .term-command-line {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+
+    .prompt-user { color: var(--neon-green); font-weight: 700; }
+    .prompt-sep { color: var(--text-secondary); }
+    .prompt-path { color: var(--cyber-purple-light); font-weight: 700; }
+    .prompt-symbol { color: var(--text-white); margin-right: 0.45rem; }
+    .prompt-typed { color: #ffffff; font-weight: 700; }
+    .prompt-cursor {
+      color: var(--neon-green);
+      margin-left: 2px;
+      animation: cursorBlink 0.9s infinite step-start;
+      font-weight: 900;
+    }
+
+    @keyframes cursorBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .term-stream-output {
+      display: flex;
+      flex-direction: column;
+      gap: 0.32rem;
+    }
+
+    .hero-stat-line {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      opacity: 0;
+      transform: translateY(4px);
+      animation: statLineFadeIn 0.22s forwards ease-out;
+    }
+
+    @keyframes statLineFadeIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-stat-prefix {
+      color: var(--neon-green);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .hero-stat-label {
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      min-width: 140px;
+    }
+
+    .hero-stat-val {
+      color: var(--text-white);
+    }
+    .hero-stat-val.green { color: var(--neon-green); font-weight: 600; text-shadow: 0 0 8px rgba(0, 255, 136, 0.4); }
+    .hero-stat-val.purple { color: var(--cyber-purple-light); font-weight: 600; }
+    .hero-stat-val.amber { color: var(--cyber-amber); font-weight: 600; }
+    .hero-stat-val.badge-ready {
+      background: rgba(0, 255, 136, 0.15);
+      border: 1px solid rgba(0, 255, 136, 0.4);
+      color: var(--neon-green);
+      padding: 0.1rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    /* Terminal Footer Status */
+    .mini-term-footer {
+      background: #111814;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.5rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .footer-status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--text-secondary);
+    }
+
+    .status-pulse-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--neon-green);
+      border-radius: 50%;
+      box-shadow: 0 0 6px var(--neon-green);
+      animation: pulseGlow 1.6s infinite ease-in-out;
+    }
+
+    .footer-telemetry {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .footer-sep { color: rgba(255, 255, 255, 0.2); }
+
+    /* ==========================================================================
+       ABOUT ME SECTION
+       ========================================================================== */
+    .about-section {
+      padding: 6rem 0;
+      position: relative;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 3rem;
+      align-items: stretch;
+    }
+
+    .about-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .about-narrative {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      margin-bottom: 1.5rem;
+    }
+
+    .about-narrative strong {
+      color: var(--text-white);
+    }
+
+    /* Dossier Card */
+    .dossier-card {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .dossier-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 1rem;
+    }
+
+    .dossier-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(176, 38, 255, 0.2) 100%);
+      border: 1px solid var(--border-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--neon-blue);
+      box-shadow: 0 0 15px var(--neon-blue-glow);
+    }
+
+    .dossier-meta h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .dossier-meta p {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--neon-blue);
+    }
+
+    .dossier-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .dossier-table td {
+      padding: 0.65rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .dossier-table td:first-child {
+      color: var(--text-muted);
+      width: 38%;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .dossier-table td:last-child {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    /* ==========================================================================
+       TECH STACK SECTION (FLOATING ICON GRID ANIMATION)
+       ========================================================================== */
+    .stack-section {
+      padding: 6rem 0;
+      position: relative;
+    }
+
+    .stack-container {
+      display: flex;
+      flex-direction: column;
+      gap: 3.5rem;
+    }
+
+    .stack-category-title {
+      font-size: 1.35rem;
+      font-family: var(--font-display);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-white);
+    }
+
+    .stack-category-title svg {
+      width: 22px;
+      height: 22px;
+      color: var(--neon-blue);
+    }
+
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+      gap: 1.35rem;
+    }
+
+    /* Subtle Floating Animation on Tech Stack */
+    .tool-card {
+      background: var(--bg-surface-card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      transition: all var(--transition-smooth);
+      position: relative;
+      overflow: hidden;
+      animation: floatSlow 5.5s infinite ease-in-out;
+    }
+
+    /* Staggered Floating Delays */
+    .tool-card:nth-child(1) { animation-delay: 0s; }
+    .tool-card:nth-child(2) { animation-delay: 1.1s; }
+    .tool-card:nth-child(3) { animation-delay: 2.2s; }
+    .tool-card:nth-child(4) { animation-delay: 3.3s; }
+    .tool-card:nth-child(5) { animation-delay: 4.4s; }
+
+    @keyframes floatSlow {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+      transform: scaleX(0);
+      transition: transform var(--transition-smooth);
+    }
+
+    .tool-card:hover {
+      border-color: var(--border-blue);
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), 0 0 25px rgba(0, 255, 136, 0.25);
+      animation-play-state: paused;
+    }
+
+    .tool-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .tool-icon-wrapper {
+      width: 46px;
+      height: 46px;
+      border-radius: 10px;
+      background: rgba(0, 255, 136, 0.08);
+      border: 1px solid rgba(0, 255, 136, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--neon-blue);
+      box-shadow: 0 0 12px rgba(0, 255, 136, 0.15);
+      transition: all var(--transition-fast);
+    }
+
+    .tool-card:hover .tool-icon-wrapper {
+      transform: rotate(5deg) scale(1.1);
+      box-shadow: 0 0 20px var(--neon-blue);
+      color: #fff;
+    }
+
+    .tool-name {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    .tool-role {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--neon-blue);
+    }
+
+    .tool-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Specialties Grid */
+    .specialties-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.35rem;
+    }
+
+    .specialty-card {
+      background: var(--bg-surface-card);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      transition: all var(--transition-smooth);
+      animation: floatSlow 6s infinite ease-in-out;
+    }
+
+    .specialty-card:nth-child(1) { animation-delay: 0.5s; }
+    .specialty-card:nth-child(2) { animation-delay: 1.8s; }
+    .specialty-card:nth-child(3) { animation-delay: 3.1s; }
+    .specialty-card:nth-child(4) { animation-delay: 4.4s; }
+
+    .specialty-card:hover {
+      border-color: var(--border-purple);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6), 0 0 25px rgba(176, 38, 255, 0.25);
+      transform: translateY(-10px) scale(1.02);
+      animation-play-state: paused;
+    }
+
+    .specialty-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .specialty-title {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      color: var(--text-white);
+    }
+
+    .specialty-desc {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .specialty-footer {
+      margin-top: auto;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       LIVE SANDBOX (INTERACTIVE TOOL DEMO: DOMAIN ANALYZER)
+       Crucial Interactive Feature Requirement
+       ========================================================================== */
+    .sandbox-section {
+      padding: 6rem 0;
+      position: relative;
+    }
+
+    .sandbox-wrapper {
+      max-width: 980px;
+      margin: 0 auto;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--border-blue);
+      background: rgba(5, 8, 16, 0.92);
+      backdrop-filter: blur(24px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(0, 255, 136, 0.18);
+    }
+
+    
+    /* Sandbox Multi-Tool Tabs */
+    .sandbox-tool-tabs {
+      display: flex;
+      background: rgba(10, 18, 13, 0.95);
+      border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+      overflow-x: auto;
+    }
+
+    .sandbox-tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.85rem 1.35rem;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .sandbox-tab-btn:hover {
+      color: var(--neon-green);
+      background: rgba(0, 255, 136, 0.05);
+    }
+
+    .sandbox-tab-btn.active {
+      color: var(--neon-green);
+      border-bottom: 2px solid var(--neon-green);
+      background: rgba(0, 255, 136, 0.1);
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.35);
+    }
+
+    .tab-badge {
+      font-size: 0.68rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-muted);
+    }
+
+    .sandbox-tab-btn.active .tab-badge {
+      background: rgba(0, 255, 136, 0.18);
+      border-color: rgba(0, 255, 136, 0.4);
+      color: var(--neon-green);
+    }
+
+    .sandbox-topbar {
+      background: rgba(13, 20, 36, 0.95);
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(0, 255, 136, 0.25);
+    }
+
+    .sandbox-term-title {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--neon-blue);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .sandbox-content {
+      padding: 1.75rem;
+    }
+
+    /* Sandbox Interactive Control Box */
+    .sandbox-input-panel {
+      background: rgba(11, 17, 32, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .sandbox-input-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .sandbox-input-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .sandbox-input-field {
+      flex: 1;
+      background: rgba(4, 6, 10, 0.85);
+      border: 1px solid var(--border-blue);
+      border-radius: 8px;
+      padding: 0.85rem 1.15rem;
+      color: var(--text-white);
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all var(--transition-fast);
+    }
+
+    .sandbox-input-field:focus {
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 15px var(--neon-blue-glow);
+    }
+
+    .sandbox-presets {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.85rem;
+    }
+
+    .preset-chip {
+      background: rgba(0, 255, 136, 0.08);
+      border: 1px solid rgba(0, 255, 136, 0.25);
+      color: var(--neon-blue);
+      padding: 0.25rem 0.65rem;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .preset-chip:hover {
+      background: var(--neon-blue);
+      color: #04060a;
+      box-shadow: 0 0 10px var(--neon-blue);
+    }
+
+    /* Progress Bar */
+    .sandbox-progress-wrapper {
+      display: none;
+      margin-bottom: 1.5rem;
+    }
+
+    .sandbox-progress-wrapper.active {
+      display: block;
+    }
+
+    .progress-status-bar {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+    }
+
+    .progress-bar-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 255, 136, 0.2);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--neon-blue), var(--cyber-purple));
+      border-radius: 4px;
+      box-shadow: 0 0 12px var(--neon-blue);
+      transition: width 0.25s ease-out;
+    }
+
+    /* Terminal Console Output & JSON Result */
+    .sandbox-terminal-output {
+      background: rgba(4, 6, 10, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 1.25rem;
+      min-height: 280px;
+      max-height: 480px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    .term-msg {
+      margin-bottom: 0.35rem;
+    }
+    .term-msg.step { color: var(--text-secondary); }
+    .term-msg.success { color: var(--neon-emerald); font-weight: 600; }
+    .term-msg.warn { color: var(--cyber-amber); }
+    .term-msg.alert { color: var(--cyber-crimson); font-weight: 600; }
+
+    /* Syntax Highlighting in JSON */
+    .json-key { color: var(--neon-blue); }
+    .json-string { color: var(--neon-emerald); }
+    .json-number { color: #f59e0b; }
+    .json-boolean { color: var(--cyber-purple-light); font-weight: 600; }
+    .json-null { color: var(--text-muted); }
+
+    .sandbox-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    /* ==========================================================================
+       SECURITY ARSENAL: PROJECTS SECTION (GITHUB REPOSITORIES)
+       ========================================================================== */
+    .projects-section {
+      padding: 6rem 0;
+      position: relative;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .project-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      border: 1px solid rgba(0, 255, 136, 0.25);
+      background: radial-gradient(circle at 10% 10%, rgba(0, 255, 136, 0.06) 0%, rgba(13, 20, 36, 0.75) 100%);
+      transition: all var(--transition-smooth);
+    }
+
+    .project-card:hover {
+      border-color: var(--neon-blue);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 255, 136, 0.3);
+      transform: translateY(-6px);
+    }
+
+    .project-card.purple-theme {
+      border-color: rgba(176, 38, 255, 0.25);
+      background: radial-gradient(circle at 10% 10%, rgba(176, 38, 255, 0.06) 0%, rgba(13, 20, 36, 0.75) 100%);
+    }
+
+    .project-card.purple-theme:hover {
+      border-color: var(--cyber-purple);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 30px rgba(176, 38, 255, 0.3);
+    }
+
+    .project-top {
+      margin-bottom: 1.5rem;
+    }
+
+    .project-badges {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .project-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(0, 255, 136, 0.1);
+      border: 1px solid var(--border-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--neon-blue);
+      margin-bottom: 1.25rem;
+      box-shadow: 0 0 15px var(--neon-blue-glow);
+    }
+
+    .project-card.purple-theme .project-icon {
+      background: rgba(176, 38, 255, 0.1);
+      border-color: var(--border-purple);
+      color: var(--cyber-purple-light);
+      box-shadow: 0 0 15px var(--cyber-purple-glow);
+    }
+
+    .project-title {
+      font-size: 1.45rem;
+      margin-bottom: 0.65rem;
+      color: var(--text-white);
+    }
+
+    .project-description {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+
+    .project-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-features li {
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .project-features li svg {
+      width: 14px;
+      height: 14px;
+      color: var(--neon-blue);
+      flex-shrink: 0;
+    }
+
+    .project-tech-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tech-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-secondary);
+    }
+
+    .project-actions {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 1.25rem;
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    /* Auxiliary Repositories Showcase */
+    .aux-repos-banner {
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.05) 0%, rgba(176, 38, 255, 0.08) 100%);
+      border: 1px solid var(--border-purple);
+      border-radius: 16px;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .aux-repo-item {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .aux-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(176, 38, 255, 0.12);
+      border: 1px solid var(--border-purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyber-purple-light);
+      flex-shrink: 0;
+    }
+
+    .aux-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      color: var(--text-white);
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .aux-desc {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 0.75rem;
+    }
+
+    /* ==========================================================================
+       RESPONSIBLE DISCLOSURES (TIMELINE & LIST)
+       ========================================================================== */
+    .disclosures-section {
+      padding: 6rem 0;
+      position: relative;
+    }
+
+    .timeline-container {
+      position: relative;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 0;
+    }
+
+    .timeline-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 30px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--neon-blue) 0%, var(--cyber-purple) 70%, transparent 100%);
+      box-shadow: 0 0 10px var(--neon-blue-glow);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 2.75rem;
+      padding-left: 75px;
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-node {
+      position: absolute;
+      left: 19px;
+      top: 24px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--bg-darkest);
+      border: 2px solid var(--neon-blue);
+      box-shadow: 0 0 15px var(--neon-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .timeline-node::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--neon-blue);
+      border-radius: 50%;
+    }
+
+    .timeline-item.purple-node .timeline-node {
+      border-color: var(--cyber-purple);
+      box-shadow: 0 0 15px var(--cyber-purple);
+    }
+    .timeline-item.purple-node .timeline-node::after {
+      background: var(--cyber-purple);
+    }
+
+    .timeline-card {
+      background: var(--bg-surface);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.75rem;
+      transition: all var(--transition-smooth);
+    }
+
+    .timeline-card:hover {
+      border-color: var(--border-blue);
+      transform: translateX(6px);
+      box-shadow: var(--glass-shadow), 0 0 25px rgba(0, 255, 136, 0.15);
+    }
+
+    .disclosure-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .disclosure-org {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .cert-logo-badge {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      background: rgba(0, 255, 136, 0.15);
+      border: 1px solid var(--border-blue);
+      color: var(--neon-blue);
+    }
+
+    .bounty-logo-badge {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      background: rgba(176, 38, 255, 0.15);
+      border: 1px solid var(--border-purple);
+      color: var(--cyber-purple-light);
+    }
+
+    .disclosure-target {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+
+    .disclosure-title {
+      font-size: 1.25rem;
+      margin-bottom: 0.65rem;
+      color: var(--text-white);
+    }
+
+    .disclosure-desc {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .disclosure-findings {
+      background: rgba(4, 6, 10, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--neon-blue);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .disclosure-findings svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      color: var(--neon-emerald);
+    }
+
+    /* ==========================================================================
+       FOOTER & CONTACT SECTION
+       ========================================================================== */
+    .site-footer {
+      background: rgba(5, 8, 15, 0.95);
+      border-top: 1px solid var(--border-subtle);
+      padding: 5rem 0 2rem;
+      position: relative;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 3.5rem;
+      margin-bottom: 4rem;
+    }
+
+    .footer-brand h2 {
+      font-size: 1.8rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-brand p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      max-width: 480px;
+      line-height: 1.7;
+      margin-bottom: 1.75rem;
+    }
+
+    .social-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .social-link-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 0.85rem 1.25rem;
+      color: var(--text-primary);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      transition: all var(--transition-smooth);
+    }
+
+    .social-link-item svg {
+      width: 20px;
+      height: 20px;
+      color: var(--neon-blue);
+      flex-shrink: 0;
+    }
+
+    .social-link-item:hover {
+      border-color: var(--neon-blue);
+      background: rgba(0, 255, 136, 0.08);
+      transform: translateX(6px);
+      color: var(--neon-blue);
+    }
+
+    /* Quick Email Copy Box */
+    .email-copy-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0, 255, 136, 0.05);
+      border: 1px dashed var(--border-blue);
+      border-radius: 10px;
+      padding: 0.75rem 1.25rem;
+      margin-top: 1.25rem;
+    }
+
+    .email-text {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--neon-blue);
+    }
+
+    .copy-btn {
+      background: rgba(0, 255, 136, 0.15);
+      border: 1px solid var(--border-blue);
+      color: var(--neon-blue);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all var(--transition-fast);
+    }
+
+    .copy-btn:hover {
+      background: var(--neon-blue);
+      color: #04060a;
+    }
+
+    /* Contact Mini Form */
+    .contact-card {
+      background: var(--bg-surface);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-purple);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(176, 38, 255, 0.1);
+    }
+
+    .contact-card h3 {
+      font-size: 1.35rem;
+      margin-bottom: 0.5rem;
+      color: var(--cyber-purple-light);
+    }
+
+    .contact-card p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.35rem;
+      text-transform: uppercase;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      background: rgba(4, 6, 10, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--text-white);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color var(--transition-fast);
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--cyber-purple);
+      box-shadow: 0 0 15px rgba(176, 38, 255, 0.25);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    /* Bottom Copyright Bar */
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .status-badge-live {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--neon-emerald);
+    }
+
+    /* ==========================================================================
+       MODALS & TOAST NOTIFICATION
+       ========================================================================== */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 6, 10, 0.85);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .cyber-modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-blue);
+      border-radius: 16px;
+      max-width: 650px;
+      width: 100%;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 255, 136, 0.2);
+      overflow: hidden;
+      animation: modalZoom 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalZoom {
+      from { opacity: 0; transform: scale(0.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-header {
+      background: rgba(13, 20, 36, 0.9);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-blue);
+    }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      color: var(--neon-blue);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.25rem;
+      padding: 0.25rem;
+      transition: color var(--transition-fast);
+    }
+
+    .modal-close:hover {
+      color: var(--cyber-crimson);
+    }
+
+    .modal-body {
+      padding: 1.75rem;
+      max-height: 75vh;
+      overflow-y: auto;
+    }
+
+    /* Toast Notification */
+    .toast-notification {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: rgba(13, 20, 36, 0.95);
+      border: 1px solid var(--neon-blue);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 255, 136, 0.3);
+      backdrop-filter: blur(16px);
+      padding: 0.9rem 1.5rem;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-white);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      z-index: 2000;
+      transform: translateY(120%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast-notification.show {
+      transform: translateY(0);
+    }
+
+    /* Print / Resume View Styling */
+    @media print {
+      body {
+        background: #fff !important;
+        color: #000 !important;
+      }
+      #cyber-canvas, .ambient-glow-1, .ambient-glow-2, .site-nav, .cyber-grid-overlay, .sandbox-section {
+        display: none !important;
+      }
+      .glass-card {
+        border: 1px solid #ccc !important;
+        background: #fff !important;
+        color: #000 !important;
+        box-shadow: none !important;
+      }
+    }
+
+    /* ==========================================================================
+       RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 1024px) {
+      .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      .hero-hud-card {
+        max-width: 580px;
+        margin: 0 auto;
+      }
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+      .aux-repos-banner {
+        grid-template-columns: 1fr;
+      }
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links, .nav-cta {
+        display: none;
+      }
+      .mobile-menu-btn {
+        display: block;
+      }
+      .hero-metrics {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .projects-grid {
+        grid-template-columns: 1fr;
+      }
+      .sandbox-input-row {
+        flex-direction: column;
+      }
+      .sandbox-input-row .btn {
+        width: 100%;
+      }
+      .timeline-container::before {
+        left: 20px;
+      }
+      .timeline-node {
+        left: 9px;
+      }
+      .timeline-item {
+        padding-left: 45px;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cyber Animated Canvas (Continuously Scrolling Matrix Rain & Particle Grid) -->
+  <canvas id="cyber-canvas"></canvas>
+
+  <!-- Visual Grid & Ambient Glows -->
+  <div class="cyber-grid-overlay" aria-hidden="true"></div>
+  <div class="ambient-glow-1" aria-hidden="true"></div>
+  <div class="ambient-glow-2" aria-hidden="true"></div>
+
+  <div class="app-wrapper">
+
+    <!-- ========================================================================
+         STICKY NAVIGATION
+         ======================================================================== -->
+    <header class="site-nav">
+      <div class="container nav-inner">
+        <a href="#hero" class="brand-logo" aria-label="Surya N Portfolio Homepage">
+          <div class="brand-badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <div class="brand-text">SURYA<span>.N</span></div>
+        </a>
+
+        <nav>
+          <ul class="nav-links">
+            <li><a href="#about" class="nav-link">// ABOUT</a></li>
+            <li><a href="#stack" class="nav-link">// TECH STACK</a></li>
+            <li><a href="#sandbox" class="nav-link">// LIVE SANDBOX</a></li>
+            <li><a href="#projects" class="nav-link">// SECURITY ARSENAL</a></li>
+            <li><a href="#disclosures" class="nav-link">// DISCLOSURES</a></li>
+            <li><a href="#contact" class="nav-link">// CONTACT</a></li>
+          </ul>
+        </nav>
+
+        <div class="nav-cta">
+          <button class="btn btn-scan-beam btn-sm" id="navResumeBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2 2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Resume
+          </button>
+        </div>
+
+        <button class="mobile-menu-btn" id="mobileToggleBtn" aria-label="Toggle navigation menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile Dropdown Drawer -->
+      <div class="mobile-drawer" id="mobileDrawer">
+        <ul class="mobile-nav-links">
+          <li><a href="#about" class="nav-link mobile-link">// ABOUT</a></li>
+          <li><a href="#stack" class="nav-link mobile-link">// TECH STACK</a></li>
+          <li><a href="#sandbox" class="nav-link mobile-link">// LIVE SANDBOX</a></li>
+          <li><a href="#projects" class="nav-link mobile-link">// SECURITY ARSENAL</a></li>
+          <li><a href="#disclosures" class="nav-link mobile-link">// DISCLOSURES</a></li>
+          <li><a href="#contact" class="nav-link mobile-link">// CONTACT</a></li>
+        </ul>
+        <div style="margin-top: 1.5rem;">
+          <button class="btn btn-scan-beam" style="width: 100%;" id="mobileResumeBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2 2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Download Resume
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ========================================================================
+         HERO SECTION
+         ======================================================================== -->
+    <section class="hero-section" id="hero">
+      <div class="container">
+        <div class="hero-grid">
+          
+          <!-- Left Hero Content -->
+          <div class="hero-content">
+            <div class="hero-status-pill">
+              <span class="pulse-dot"></span>
+              <span>SYSTEM CLEARANCE: RED TEAM // OFFENSIVE SEC</span>
+            </div>
+
+            <!-- Glitching Neon Hero Name -->
+            <div class="glitch-wrapper">
+              <h1 class="hero-title glitch-text" id="heroGlitchText" data-text="Surya N">
+                Surya N
+              </h1>
+            </div>
+
+            <div class="hero-subtitle">
+              Ethical Hacker &amp; Penetration Tester
+            </div>
+
+            <div class="hero-degree-tag">
+              &lt; B.E. Cyber Security Student &gt;
+            </div>
+
+            <p class="hero-bio">
+              Offensive security researcher focused on breaking API boundaries, IDOR authorization bypasses, and attack surface discovery. Passionate about uncovering high-impact business logic vulnerabilities, web application penetration testing, and ethical security research.
+            </p>
+
+            <!-- Sleek Scanning Light-Beam Resume Button -->
+            <div class="hero-actions">
+              <button class="btn btn-scan-beam" id="heroDownloadResumeBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2 2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Download Resume
+              </button>
+
+              <a href="#sandbox" class="btn btn-secondary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                Try Live Sandbox
+              </a>
+
+              <a href="#disclosures" class="btn btn-purple">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                Disclosures
+              </a>
+            </div>
+
+            <!-- Live Metrics Row -->
+            <div class="hero-metrics">
+              <div class="metric-item">
+                <span class="metric-value">B.E.</span>
+                <span class="metric-label">Cyber Security</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-value">OWASP</span>
+                <span class="metric-label">API Security</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-value">3+</span>
+                <span class="metric-label">Disclosures</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-value">100%</span>
+                <span class="metric-label">Ethical Research</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Mini-Terminal Window (Ethical Hacker Workspace) -->
+          <div class="hero-terminal-wrapper">
+            <div class="mini-terminal-window">
+              <!-- Realistic UI Header -->
+              <div class="mini-term-header">
+                <div class="term-window-controls">
+                  <span class="term-dot dot-red" title="Close Shell"></span>
+                  <span class="term-dot dot-yellow" title="Minimize Window"></span>
+                  <span class="term-dot dot-green" title="Expand Shell"></span>
+                </div>
+                <div class="mini-term-title">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="4 17 10 11 4 5"></polyline>
+                    <line x1="12" y1="19" x2="20" y2="19"></line>
+                  </svg>
+                  <span>surya@kali:~ (zsh)</span>
+                </div>
+                <div class="mini-term-actions">
+                  <span class="term-live-tag">LIVE_SHELL</span>
+                  <button id="heroTermReplayBtn" class="term-replay-btn" title="Re-run ./whoami.sh script">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <polyline points="23 4 23 10 17 10"></polyline>
+                      <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                    </svg>
+                    <span>Replay</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Terminal Interior -->
+              <div class="mini-term-body" id="heroTermBody">
+                <div class="term-telemetry-banner">
+                  <span>KALI GNU/LINUX 2026.4 // PTS/0 // OFFSEC KERNEL</span>
+                  <span>SECURITY READY</span>
+                </div>
+
+                <!-- Active Animated Typing Line -->
+                <div class="term-command-line">
+                  <span class="prompt-user">surya@kali</span><span class="prompt-sep">:</span><span class="prompt-path">~</span><span class="prompt-symbol">$</span>
+                  <span class="prompt-typed" id="heroTypingText"></span>
+                  <span class="prompt-cursor" id="heroBlinkCursor">█</span>
+                </div>
+
+                <!-- Stream Output (Appended via JS) -->
+                <div class="term-stream-output" id="heroTermOutput"></div>
+              </div>
+
+              <!-- Terminal Footer Status Bar -->
+              <div class="mini-term-footer">
+                <div class="footer-status-indicator">
+                  <span class="status-pulse-dot"></span>
+                  <span>OFFENSIVE SHELL: ACTIVE</span>
+                </div>
+                <div class="footer-telemetry">
+                  <span>MEM: 1.4G / 16G</span>
+                  <span class="footer-sep">|</span>
+                  <span>LATENCY: 12ms</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         ABOUT ME SECTION
+         ======================================================================== -->
+    <section class="about-section reveal-on-scroll" id="about">
+      <div class="container">
+        
+        <div class="section-header">
+          <div class="section-tag">// IDENTITY &amp; PHILOSOPHY</div>
+          <h2 class="section-title">About Surya N</h2>
+          <p class="section-subtitle">
+            B.E. Cyber Security Student passionate about proactive ethical security research, API logic exploitation, and building next-generation security systems.
+          </p>
+        </div>
+
+        <div class="about-grid">
+          
+          <!-- Narrative Column -->
+          <div class="glass-card about-card">
+            <div>
+              <p class="about-narrative">
+                I am a <strong>3rd-year B.E. Cyber Security student at CMS College of Engineering and Technology</strong> with a deep passion for offensive security research, breaking complex API business logic, and automated attack surface exploration.
+              </p>
+
+              <p class="about-narrative">
+                My primary focus revolves around <strong>API security assessments (OWASP API Top 10)</strong>, <strong>Insecure Direct Object References (IDOR)</strong>, <strong>GraphQL introspection disclosures</strong>, and <strong>authentication rate-limit bypasses</strong>. I believe in demonstrating real-world risk through verifiable proof-of-concepts while strictly upholding the principles of Coordinated Vulnerability Disclosure (CVD).
+              </p>
+
+              <p class="about-narrative">
+                Through deep manual auditing and custom Python automation, I uncover critical authorization flaws and information disclosure vectors across production systems before malicious threat actors can exploit them.
+              </p>
+            </div>
+          </div>
+
+          <!-- Dossier Profile Specs -->
+          <div class="dossier-card">
+            <div class="dossier-header">
+              <div class="dossier-avatar">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <div class="dossier-meta">
+                <h3>Surya N</h3>
+                <p>ETHICAL HACKER / SECURITY RESEARCHER</p>
+              </div>
+            </div>
+
+            <table class="dossier-table">
+              <tbody>
+                <tr>
+                  <td>Education</td>
+                  <td>B.E. Cyber Security Student</td>
+                </tr>
+                <tr>
+                  <td>Primary Focus</td>
+                  <td>Offensive Penetration Testing &amp; API Logic</td>
+                </tr>
+                <tr>
+                  <td>Top Disclosures</td>
+                  <td>relfood.com, Coox.in, Homebytes.co.in</td>
+                </tr>
+                <tr>
+                  <td>Specialties</td>
+                  <td>IDOR, GraphQL Introspection, OTP ATO, SQLi</td>
+                </tr>
+                <tr>
+                  <td>Operating System</td>
+                  <td>Kali Linux / Hardened Debian</td>
+                </tr>
+                <tr>
+                  <td>Ethics Code</td>
+                  <td>Coordinated Vulnerability Disclosure (CVD)</td>
+                </tr>
+                <tr>
+                  <td>Status</td>
+                  <td><span class="badge badge-green">Available for Security Audits</span></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="margin-top: auto; display: flex; gap: 0.75rem;">
+              <button class="btn btn-secondary btn-sm" style="width: 100%;" id="verifyDossierBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                Verify Credentials
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         TECH STACK SECTION (FLOATING ICON GRID ANIMATION)
+         ======================================================================== -->
+    <section class="stack-section reveal-on-scroll" id="stack">
+      <div class="container">
+        
+        <div class="section-header">
+          <div class="section-tag">// OFFENSIVE ARSENAL</div>
+          <h2 class="section-title">Tech Stack &amp; Attack Vectors</h2>
+          <p class="section-subtitle">
+            Floating cyber modules showcasing battle-tested offensive tooling and specialized vulnerability exploitation techniques.
+          </p>
+        </div>
+
+        <div class="stack-container">
+          
+          <!-- Category 1: Security Tools -->
+          <div>
+            <div class="stack-category-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+              </svg>
+              Core Security Tools
+            </div>
+
+            <div class="stack-grid">
+              
+              <!-- Burp Suite -->
+              <div class="tool-card">
+                <div class="tool-icon-wrapper">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                    <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                    <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                    <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                  </svg>
+                </div>
+                <div class="tool-name">Burp Suite</div>
+                <div class="tool-role">// HTTP/API Proxy &amp; Fuzzing</div>
+                <p class="tool-desc">
+                  Intercepting, analyzing, and fuzzing REST/GraphQL endpoints, session management, and business logic flaws.
+                </p>
+              </div>
+
+              <!-- Nmap -->
+              <div class="tool-card">
+                <div class="tool-icon-wrapper">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m4.93 4.93 4.24 4.24"></path>
+                    <path d="m14.83 9.17 4.24-4.24"></path>
+                    <path d="m14.83 14.83 4.24 4.24"></path>
+                    <path d="m9.17 14.83-4.24 4.24"></path>
+                  </svg>
+                </div>
+                <div class="tool-name">Nmap</div>
+                <div class="tool-role">// Port Auditing &amp; NSE</div>
+                <p class="tool-desc">
+                  Port scanning, service banner grabbing, OS fingerprinting, and automated vulnerability detection with NSE scripts.
+                </p>
+              </div>
+
+              <!-- SQLMap -->
+              <div class="tool-card">
+                <div class="tool-icon-wrapper">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                  </svg>
+                </div>
+                <div class="tool-name">SQLMap</div>
+                <div class="tool-role">// Automated SQLi Engine</div>
+                <p class="tool-desc">
+                  Automated detection and verification of database injection flaws, schema fingerprinting, and payload crafting.
+                </p>
+              </div>
+
+              <!-- Kali Linux -->
+              <div class="tool-card">
+                <div class="tool-icon-wrapper">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="4 17 10 11 4 5"></polyline>
+                    <line x1="12" y1="19" x2="20" y2="19"></line>
+                  </svg>
+                </div>
+                <div class="tool-name">Kali Linux</div>
+                <div class="tool-role">// Offensive OS Platform</div>
+                <p class="tool-desc">
+                  Primary battle-hardened operating system equipped with red teaming toolchains, wordlists, and packet crafting suites.
+                </p>
+              </div>
+
+              <!-- Docker -->
+              <div class="tool-card">
+                <div class="tool-icon-wrapper">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 11V8a1 1 0 0 1 1-1h3v4H4z"></path>
+                    <path d="M8 7V4a1 1 0 0 1 1-1h3v4H8z"></path>
+                    <path d="M12 7V4a1 1 0 0 1 1-1h3v4h-4z"></path>
+                    <path d="M2 13h20c-.5 4-4 8-10 8S2.5 17 2 13z"></path>
+                  </svg>
+                </div>
+                <div class="tool-name">Docker</div>
+                <div class="tool-role">// Sandboxed Vuln Labs</div>
+                <p class="tool-desc">
+                  Containerized testing environments, microservice security testbeds, reproducible CTF labs, and payload sandboxes.
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Category 2: Vulnerability Specialties -->
+          <div>
+            <div class="stack-category-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              Core Specialties &amp; Attack Vectors
+            </div>
+
+            <div class="specialties-grid">
+              
+              <!-- IDOR -->
+              <div class="specialty-card">
+                <div class="specialty-top">
+                  <div class="specialty-title">IDOR / BOLA</div>
+                  <span class="badge badge-red">CRITICAL IMPACT</span>
+                </div>
+                <p class="specialty-desc">
+                  Broken Object Level Authorization. Manipulating user IDs or order identifiers in REST/JSON requests to access cross-tenant data.
+                </p>
+                <div class="specialty-footer">
+                  <span>OWASP API #1</span>
+                  <span>Tested on relfood.com</span>
+                </div>
+              </div>
+
+              <!-- XSS -->
+              <div class="specialty-card">
+                <div class="specialty-top">
+                  <div class="specialty-title">XSS Exploitation</div>
+                  <span class="badge badge-blue">CLIENT-SIDE SEC</span>
+                </div>
+                <p class="specialty-desc">
+                  Context-aware Cross-Site Scripting (Reflected, Stored, DOM). Bypassing WAF filters, CSP evasion, and demonstrating session hijack vectors.
+                </p>
+                <div class="specialty-footer">
+                  <span>OWASP Top 10</span>
+                  <span>Filter Evasion</span>
+                </div>
+              </div>
+
+              <!-- SQL Injection -->
+              <div class="specialty-card">
+                <div class="specialty-top">
+                  <div class="specialty-title">SQL Injection</div>
+                  <span class="badge badge-green">INJECTION ATTACK</span>
+                </div>
+                <p class="specialty-desc">
+                  Auditing input vectors for Blind (Time/Boolean), Union-based, and Error-based SQL injections to extract database structures.
+                </p>
+                <div class="specialty-footer">
+                  <span>CWE-89</span>
+                  <span>Manual + SQLMap</span>
+                </div>
+              </div>
+
+              <!-- GraphQL Misconfigurations -->
+              <div class="specialty-card">
+                <div class="specialty-top">
+                  <div class="specialty-title">GraphQL Flaws</div>
+                  <span class="badge badge-purple">API SECURITY</span>
+                </div>
+                <p class="specialty-desc">
+                  Exploiting unrestricted introspection queries, circular query DoS, unauthorized mutation execution, and hidden resolver extraction.
+                </p>
+                <div class="specialty-footer">
+                  <span>OWASP API #8</span>
+                  <span>relfood.com Disclosed</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         LIVE SANDBOX (INTERACTIVE TOOL DEMO: DOMAIN SECURITY ANALYZER)
+         ======================================================================== -->
+    <section class="sandbox-section reveal-on-scroll" id="sandbox">
+      <div class="container">
+        
+        <div class="section-header">
+          <div class="section-tag">// INTERACTIVE SECURITY LAB</div>
+          <h2 class="section-title">Live Security Sandbox</h2>
+          <p class="section-subtitle">
+            Simulate live execution of Surya's open-source security tools. Switch between the DNS &amp; Header Analyzer, the Attack Surface Mapper, or the AI Phishing Detector.
+          </p>
+        </div>
+
+        <div class="sandbox-wrapper">
+          <!-- Multi-Tool Selector Bar -->
+          <div class="sandbox-tool-tabs">
+            <button class="sandbox-tab-btn active" id="tabDomainAnalyzer" onclick="switchSandboxTool('domain-security-analyzer')">
+              <span class="tab-icon">🌐</span>
+              <span class="tab-name">domain-security-analyzer</span>
+              <span class="tab-badge">DNS &amp; TLS</span>
+            </button>
+            <button class="sandbox-tab-btn" id="tabSurfaceAttack" onclick="switchSandboxTool('surface-attack')">
+              <span class="tab-icon">🎯</span>
+              <span class="tab-name">surface-attack</span>
+              <span class="tab-badge">ASM &amp; PORTS</span>
+            </button>
+            <button class="sandbox-tab-btn" id="tabSecureMail" onclick="switchSandboxTool('securemail')">
+              <span class="tab-icon">🛡️</span>
+              <span class="tab-name">securemail</span>
+              <span class="tab-badge">AI PHISHING</span>
+            </button>
+          </div>
+
+          <!-- Sandbox Topbar -->
+          <div class="sandbox-topbar">
+            <div class="sandbox-term-title" id="sandboxTermTitle">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+              </svg>
+              <span id="sandboxTermTitleText">surya@sandbox:~/domain-security-analyzer (interactive demo)</span>
+            </div>
+            <div class="hud-controls">
+              <div class="hud-control-dot red"></div>
+              <div class="hud-control-dot yellow"></div>
+              <div class="hud-control-dot green"></div>
+            </div>
+          </div>
+
+          <div class="sandbox-content">
+            
+            <!-- Dynamic Input Panel -->
+            <div class="sandbox-input-panel">
+              <label class="sandbox-input-label" id="sandboxInputLabel" for="sandboxDomainInput">Target Domain for Security Assessment:</label>
+              <div class="sandbox-input-row">
+                <input type="text" id="sandboxDomainInput" class="sandbox-input-field" placeholder="e.g. relfood.com, example.com, coox.in" value="example.com" spellcheck="false" autocomplete="off">
+                <button class="btn btn-scan-beam" id="runScanBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  <span id="runScanBtnText">Scan Domain</span>
+                </button>
+              </div>
+
+              <!-- Quick Presets Container -->
+              <div class="sandbox-presets" id="sandboxPresetsContainer">
+                <span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">Quick Presets:</span>
+                <button class="preset-chip" onclick="setPreset('example.com')">example.com</button>
+                <button class="preset-chip" onclick="setPreset('relfood.com')">relfood.com (Disclosed Scope)</button>
+                <button class="preset-chip" onclick="setPreset('coox.in')">coox.in (Bounty Target)</button>
+                <button class="preset-chip" onclick="setPreset('homebytes.co.in')">homebytes.co.in</button>
+              </div>
+            </div>
+
+            <!-- Simulated Scanning Progress Bar -->
+            <div class="sandbox-progress-wrapper" id="sandboxProgressWrapper">
+              <div class="progress-status-bar">
+                <span id="scanStatusText">[01/05] Resolving Authoritative DNS Records...</span>
+                <span id="scanPercentText" style="color: var(--neon-blue); font-weight: 700;">0%</span>
+              </div>
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="scanProgressBar"></div>
+              </div>
+            </div>
+
+            <!-- Terminal Output / Formatted Mock JSON Display -->
+            <div class="sandbox-terminal-output" id="sandboxOutput">
+              <div class="term-msg step" style="color: var(--neon-blue);">
+                [+] Domain Security Analyzer Sandbox initialized.
+              </div>
+              <div class="term-msg step">
+                [*] Select or type a target domain above, then click <strong style="color: #fff;">'Scan Domain'</strong>.
+              </div>
+              <div class="term-msg step" style="color: var(--text-muted);">
+                // Simulates live execution of Surya's Python/Bash domain security assessment tool.
+              </div>
+            </div>
+
+            <!-- Sandbox Control Actions -->
+            <div class="sandbox-actions">
+              <div style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">
+                Engine: <span id="sandboxEngineText" style="color: var(--neon-blue);">domain-security-analyzer v2.4 (Python/dnspython)</span>
+              </div>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-secondary btn-sm" id="copyJsonBtn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  Copy JSON
+                </button>
+                <button class="btn btn-secondary btn-sm" id="clearSandboxBtn">
+                  Clear
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         SECURITY ARSENAL: PROJECTS SECTION (GITHUB REPOSITORIES)
+         ======================================================================== -->
+    <section class="projects-section reveal-on-scroll" id="projects">
+      <div class="container">
+        
+        <div class="section-header">
+          <div class="section-tag">// OPEN SOURCE &amp; RECONNAISSANCE</div>
+          <h2 class="section-title">Security Arsenal</h2>
+          <p class="section-subtitle">
+            Tools, automated pentesting frameworks, and AI threat detection systems built by Surya N and hosted on GitHub.
+          </p>
+        </div>
+
+        <div class="projects-grid">
+          
+          <!-- Project 1: surface-attack -->
+          <div class="glass-card project-card">
+            <div class="project-top">
+              <div class="project-badges">
+                <span class="badge badge-blue">PENTEST FRAMEWORK</span>
+                <span class="text-mono" style="font-size: 0.75rem; color: var(--text-muted);">Python</span>
+              </div>
+
+              <div class="project-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+              </div>
+
+              <h3 class="project-title">surface-attack</h3>
+              <p class="project-description">
+                Mini Pentest Framework engineered in Python for cross-platform, real-data-only reconnaissance and comprehensive web security assessment. Maps external asset perimeters, scans open ports, and discovers exposed services.
+              </p>
+
+              <ul class="project-features">
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Cross-platform multi-threaded host discovery
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Real-data asset cataloging &amp; live banner grab
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Automated attack surface perimeter reporting
+                </li>
+              </ul>
+
+              <div class="project-tech-tags">
+                <span class="tech-tag">Python 3</span>
+                <span class="tech-tag">Socket Programming</span>
+                <span class="tech-tag">Nmap Engine</span>
+                <span class="tech-tag">ASM</span>
+              </div>
+            </div>
+
+            <div class="project-actions">
+              <a href="https://github.com/suryanagalingam877-code/surface-attack" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                View Repository
+              </a>
+              <button class="btn btn-secondary btn-sm" onclick="switchSandboxTool('surface-attack', '198.51.100.14'); scrollToSandbox();">
+                Test in Sandbox
+              </button>
+            </div>
+          </div>
+
+          <!-- Project 2: domain-security-analyzer -->
+          <div class="glass-card project-card purple-theme">
+            <div class="project-top">
+              <div class="project-badges">
+                <span class="badge badge-purple">DNS &amp; RECON</span>
+                <span class="text-mono" style="font-size: 0.75rem; color: var(--text-muted);">Python</span>
+              </div>
+
+              <div class="project-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+              </div>
+
+              <h3 class="project-title">domain-security-analyzer</h3>
+              <p class="project-description">
+                Cross-platform domain security analyzer evaluating DNS (A/AAAA/MX/NS), SSL/TLS certificates, DMARC, DKIM, DNSSEC, WHOIS records, Security Headers (HSTS, CSP), and CAA Records to detect email spoofing and misconfigurations.
+              </p>
+
+              <ul class="project-features">
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Evaluates DNS, SSL/TLS, DMARC, DKIM &amp; DNSSEC
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  WHOIS registrar audit &amp; CAA record verification
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Security headers check (HSTS, CSP, X-Frame)
+                </li>
+              </ul>
+
+              <div class="project-tech-tags">
+                <span class="tech-tag">Python 3</span>
+                <span class="tech-tag">dnspython</span>
+                <span class="tech-tag">OpenSSL</span>
+                <span class="tech-tag">WHOIS</span>
+                <span class="tech-tag">TLS 1.3</span>
+              </div>
+            </div>
+
+            <div class="project-actions">
+              <a href="https://github.com/suryanagalingam877-code/domain-security-analyzer" target="_blank" rel="noopener noreferrer" class="btn btn-purple btn-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                View Repository
+              </a>
+              <button class="btn btn-secondary btn-sm" onclick="switchSandboxTool('domain-security-analyzer', 'example.com'); scrollToSandbox();">
+                Run Live Demo
+              </button>
+            </div>
+          </div>
+
+          <!-- Project 3: securemail -->
+          <div class="glass-card project-card">
+            <div class="project-top">
+              <div class="project-badges">
+                <span class="badge badge-green">AI PHISHING DEFENSE</span>
+                <span class="text-mono" style="font-size: 0.75rem; color: var(--text-muted);">Flask / ML</span>
+              </div>
+
+              <div class="project-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </div>
+
+              <h3 class="project-title">securemail</h3>
+              <p class="project-description">
+                AI-powered phishing email detection system utilizing Flask, Machine Learning, URL analysis, and DNS checks. Accurately flags spear-phishing payloads, validates sender authenticity, and provides confidence risk scoring.
+              </p>
+
+              <ul class="project-features">
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Machine learning email classification model
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Deep URL analysis &amp; DNS verification pipeline
+                </li>
+                <li>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Interactive admin detection dashboard
+                </li>
+              </ul>
+
+              <div class="project-tech-tags">
+                <span class="tech-tag">Python</span>
+                <span class="tech-tag">Flask</span>
+                <span class="tech-tag">Scikit-Learn</span>
+                <span class="tech-tag">SQLite</span>
+                <span class="tech-tag">DNSPython</span>
+              </div>
+            </div>
+
+            <div class="project-actions">
+              <a href="https://github.com/suryanagalingam877-code/securemail" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                GitHub Repo
+              </a>
+              <a href="https://securemail-mkt6.onrender.com" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="color: var(--neon-emerald); border-color: rgba(0, 255, 136, 0.4);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                Live Demo
+              </a>
+              <button class="btn btn-secondary btn-sm" onclick="switchSandboxTool('securemail', 'Urgent: Account Verification Required - http://pay-security-update.xyz/verify'); scrollToSandbox();">
+                Test in Sandbox
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Auxiliary Repositories: PentestPilot & codex -->
+        <div class="aux-repos-banner">
+          
+          <div class="aux-repo-item">
+            <div class="aux-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+              </svg>
+            </div>
+            <div>
+              <div class="aux-title">
+                <span>PentestPilot</span>
+                <span class="badge badge-blue">Python</span>
+              </div>
+              <p class="aux-desc">
+                Automated reconnaissance orchestrator assisting penetration testers during scope enumeration and vulnerability discovery workflows.
+              </p>
+              <a href="https://github.com/suryanagalingam877-code/PentestPilot" target="_blank" rel="noopener noreferrer" style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--neon-blue); text-decoration: none;">
+                github.com/suryanagalingam877-code/PentestPilot &rarr;
+              </a>
+            </div>
+          </div>
+
+          <div class="aux-repo-item">
+            <div class="aux-icon" style="background: rgba(0, 255, 136, 0.12); border-color: var(--border-blue); color: var(--neon-blue);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+            </div>
+            <div>
+              <div class="aux-title">
+                <span>codex</span>
+                <span class="badge badge-purple">TypeScript</span>
+              </div>
+              <p class="aux-desc">
+                Developer utilities and modular code libraries designed for cyber security tooling, payload structuring, and script automation.
+              </p>
+              <a href="https://github.com/suryanagalingam877-code/codex" target="_blank" rel="noopener noreferrer" style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--cyber-purple-light); text-decoration: none;">
+                github.com/suryanagalingam877-code/codex &rarr;
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         RESPONSIBLE DISCLOSURES SECTION
+         ======================================================================== -->
+    <section class="disclosures-section reveal-on-scroll" id="disclosures">
+      <div class="container">
+        
+        <div class="section-header">
+          <div class="section-tag">// HALL OF FAME &amp; SECURITY ADVISORIES</div>
+          <h2 class="section-title">Responsible Disclosures</h2>
+          <p class="section-subtitle">
+            Ethically reported, coordinated, and remediated security findings acknowledged by national cyber emergency teams and production services.
+          </p>
+        </div>
+
+        <div class="timeline-container">
+          
+          <!-- Disclosure 1: relfood.com -->
+          <div class="timeline-item">
+            <div class="timeline-node"></div>
+            <div class="timeline-card">
+              <div class="disclosure-top">
+                <div class="disclosure-org">
+                  <div class="cert-logo-badge">RESPONSIBLY DISCLOSED</div>
+                  <div class="disclosure-target">Target: <strong>relfood.com</strong></div>
+                </div>
+                <span class="badge badge-red">SEVERITY: HIGH (CVSS 8.2)</span>
+              </div>
+
+              <h3 class="disclosure-title">Insecure Direct Object Reference (IDOR) &amp; GraphQL Introspection</h3>
+              
+              <p class="disclosure-desc">
+                Discovered critical IDOR flaws within the order retrieval and customer profile APIs, allowing unauthorized access to customer records. Concurrently uncovered an enabled GraphQL introspection endpoint, disclosing complete backend query schemas, private mutations, and sensitive database field structures.
+              </p>
+
+              <div class="disclosure-findings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Status: Responsibly reported to the security team, verified, and successfully mitigated on relfood.com.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Disclosure 2: Bug Bounty (coox.in) -->
+          <div class="timeline-item purple-node">
+            <div class="timeline-node"></div>
+            <div class="timeline-card">
+              <div class="disclosure-top">
+                <div class="disclosure-org">
+                  <div class="bounty-logo-badge">BUG BOUNTY</div>
+                  <div class="disclosure-target">Target: <strong>coox.in</strong></div>
+                </div>
+                <span class="badge badge-red">SEVERITY: CRITICAL (CVSS 9.1)</span>
+              </div>
+
+              <h3 class="disclosure-title">OTP Brute-Force &amp; Complete Account Takeover (ATO)</h3>
+              
+              <p class="disclosure-desc">
+                Identified a total lack of rate-limiting and anti-automation protections on the SMS One-Time Password (OTP) verification endpoint. Allowed an unauthenticated attacker to brute-force 4-to-6 digit verification tokens in seconds, resulting in arbitrary user account takeover and saved profile access.
+              </p>
+
+              <div class="disclosure-findings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Status: Responsibly disclosed to founders/engineering team, rewarded, and patched with exponential backoff.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Disclosure 3: Bug Bounty (homebytes.co.in) -->
+          <div class="timeline-item">
+            <div class="timeline-node"></div>
+            <div class="timeline-card">
+              <div class="disclosure-top">
+                <div class="disclosure-org">
+                  <div class="bounty-logo-badge">BUG BOUNTY</div>
+                  <div class="disclosure-target">Target: <strong>homebytes.co.in</strong></div>
+                </div>
+                <span class="badge badge-blue">SEVERITY: MEDIUM (CVSS 5.3)</span>
+              </div>
+
+              <h3 class="disclosure-title">Verbose Error Handling &amp; Server Stack Information Leakage</h3>
+              
+              <p class="disclosure-desc">
+                Discovered improper exception handling in application endpoints. Supplying malformed payload arrays triggered unhandled server stack traces disclosing framework versions, database schema names, file system directories, and internal backend IPs to external clients.
+              </p>
+
+              <div class="disclosure-findings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Status: Disclosed to development team; generic sanitized error handlers deployed.</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         FOOTER & CONTACT SECTION
+         ======================================================================== -->
+    <footer class="site-footer reveal-on-scroll" id="contact">
+      <div class="container">
+        
+        <div class="footer-grid">
+          
+          <!-- Contact Info Column -->
+          <div class="footer-brand">
+            <h2 class="gradient-text">Surya N</h2>
+            <p>
+              Ethical Hacker, Penetration Tester, and B.E. Cyber Security Student. Available for coordinated penetration testing, API vulnerability assessments, and responsible security research collaborations.
+            </p>
+
+            <div class="social-links">
+              <!-- GitHub -->
+              <a href="https://github.com/suryanagalingam877-code" target="_blank" rel="noopener noreferrer" class="social-link-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                </svg>
+                <span>github.com/suryanagalingam877-code</span>
+              </a>
+
+              <!-- LinkedIn -->
+              <a href="https://www.linkedin.com/in/surya-nagalingam" target="_blank" rel="noopener noreferrer" class="social-link-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                  <rect x="2" y="9" width="4" height="12"></rect>
+                  <circle cx="4" cy="4" r="2"></circle>
+                </svg>
+                <span>linkedin.com/in/surya-nagalingam</span>
+              </a>
+
+              <!-- Direct Email Link -->
+              <a href="mailto:suryanagalingam877@gmail.com" class="social-link-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                <span>suryanagalingam877@gmail.com</span>
+              </a>
+            </div>
+
+            <!-- Quick Copy Email Box -->
+            <div class="email-copy-box">
+              <span class="email-text">suryanagalingam877@gmail.com</span>
+              <button class="copy-btn" id="copyEmailBtn" aria-label="Copy Email to Clipboard">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Copy Email
+              </button>
+            </div>
+          </div>
+
+          <!-- Contact Form / Message Box -->
+          <div class="contact-card">
+            <h3>Send Secure Message</h3>
+            <p>Direct communication channel for penetration testing, security inquiries, or security collaborations.</p>
+
+            <form id="contactForm" onsubmit="handleContactSubmit(event)">
+              <div class="form-group">
+                <label class="form-label" for="contactName">Sender Identifier</label>
+                <input type="text" class="form-input" id="contactName" placeholder="Your Name / Organization" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="contactEmail">Return Contact Email</label>
+                <input type="email" class="form-input" id="contactEmail" placeholder="name@company.com" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="contactMsg">Message / Scope of Inquiry</label>
+                <textarea class="form-textarea" id="contactMsg" placeholder="Inquiry regarding penetration testing, API auditing, or security consultation..." required></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-purple" style="width: 100%;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+                Transmit Message
+              </button>
+            </form>
+          </div>
+
+        </div>
+
+        <!-- Footer Bottom Bar -->
+        <div class="footer-bottom">
+          <div>
+            &copy; <span id="currentYear">2026</span> Surya N. Designed for High-Impact Ethical Security.
+          </div>
+          <div class="status-badge-live">
+            <span class="pulse-dot"></span>
+            <span>SYSTEM ENCRYPTION: ACTIVE // 256-BIT SECURE</span>
+          </div>
+        </div>
+
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ========================================================================
+         MODALS & DIALOGS
+         ======================================================================== -->
+  
+  <!-- Resume Preview & Download Modal -->
+  <div class="modal-backdrop" id="resumeModal">
+    <div class="cyber-modal">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          CURRICULUM VITAE // SURYA N
+        </div>
+        <button class="modal-close" onclick="closeModal('resumeModal')">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div style="background: rgba(4, 6, 10, 0.7); border: 1px solid var(--border-blue); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h2 style="font-size: 1.5rem; color: var(--neon-blue); margin-bottom: 0.25rem;">Surya N</h2>
+          <p style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--cyber-purple-light); margin-bottom: 1rem;">
+            Ethical Hacker &bull; Penetration Tester &bull; B.E. Cyber Security Student
+          </p>
+          <p style="font-size: 0.92rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
+            Offensive security specialist focused on API logic bypasses, IDOR vulnerability discovery, and coordinated disclosures through private bug bounty and responsible disclosure frameworks. Passionate about automating attack surface management and engineering defensive-grade offensive tools.
+          </p>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-family: var(--font-mono); font-size: 0.82rem; color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 1rem;">
+            <div>
+              <strong style="color: var(--text-white);">TOOLS:</strong> Burp Suite, Nmap, SQLMap, Kali Linux, Docker
+            </div>
+            <div>
+              <strong style="color: var(--text-white);">SPECIALTIES:</strong> IDOR, GraphQL, XSS, SQLi, Auth Bypass
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button class="btn btn-scan-beam" style="flex: 1;" onclick="downloadResumePDF()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2 2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Print / Save PDF
+          </button>
+          <a href="mailto:suryanagalingam877@gmail.com?subject=Interview%20Request%20-%20Surya%20N" class="btn btn-secondary" style="flex: 1;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            Request Official CV
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Pill -->
+  <div class="toast-notification" id="toastNotification">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" color="var(--neon-blue)">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+    <span id="toastMsg">Action executed successfully.</span>
+  </div>
+
+  <!-- ========================================================================
+       JAVASCRIPT: ANIMATIONS, INTERSECTION OBSERVER & LIVE SANDBOX
+       ======================================================================== -->
+  <script>
+    /* ==========================================================================
+       1. CANVAS: CONTINUOUSLY SCROLLING MATRIX STREAM & PARTICLE GRID
+       ========================================================================== */
+    (function initCyberCanvas() {
+      const canvas = document.getElementById('cyber-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      let width = 0;
+      let height = 0;
+      let particles = [];
+      let streams = [];
+      let mouse = { x: -1000, y: -1000, radius: 150 };
+
+      // Matrix character set
+      const matrixChars = '01010101XYZABCDEF><[]{}#*+=~_!/\\';
+
+      function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        initParticles();
+        initStreams();
+      }
+
+      function initParticles() {
+        particles = [];
+        const count = Math.floor((width * height) / 19000);
+        for (let i = 0; i < count; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.65,
+            vy: (Math.random() - 0.5) * 0.65,
+            size: Math.random() * 2 + 1,
+            color: Math.random() > 0.45 ? 'rgba(0, 255, 136,' : 'rgba(176, 38, 255,'
+          });
+        }
+      }
+
+      function initStreams() {
+        streams = [];
+        const streamCount = Math.floor(width / 65);
+        for (let i = 0; i < streamCount; i++) {
+          streams.push({
+            x: Math.floor(Math.random() * width),
+            y: Math.random() * height,
+            speed: Math.random() * 1.6 + 0.8,
+            char: matrixChars[Math.floor(Math.random() * matrixChars.length)],
+            updateTick: 0
+          });
+        }
+      }
+
+      window.addEventListener('resize', resize);
+      window.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+      });
+      window.addEventListener('mouseleave', () => {
+        mouse.x = -1000;
+        mouse.y = -1000;
+      });
+
+      resize();
+
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+
+        // Render continuously scrolling Matrix glyphs
+        ctx.font = '11px "JetBrains Mono", monospace';
+        for (let i = 0; i < streams.length; i++) {
+          const s = streams[i];
+          s.y += s.speed;
+          s.updateTick++;
+
+          if (s.updateTick % 10 === 0) {
+            s.char = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+          }
+
+          if (s.y > height) {
+            s.y = -20;
+            s.x = Math.floor(Math.random() * width);
+          }
+
+          ctx.fillStyle = 'rgba(0, 255, 136, 0.22)';
+          ctx.fillText(s.char, s.x, s.y);
+        }
+
+        // Render Particle Nodes & Network Lines
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < 0 || p.x > width) p.vx *= -1;
+          if (p.y < 0 || p.y > height) p.vy *= -1;
+
+          // Mouse gentle repel
+          const dx = mouse.x - p.x;
+          const dy = mouse.y - p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < mouse.radius) {
+            const force = (mouse.radius - dist) / mouse.radius;
+            p.x -= (dx / dist) * force * 2.5;
+            p.y -= (dy / dist) * force * 2.5;
+          }
+
+          // Draw node
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fillStyle = p.color + '0.6)';
+          ctx.fill();
+
+          // Connect adjacent nodes
+          for (let j = i + 1; j < particles.length; j++) {
+            const p2 = particles[j];
+            const djx = p.x - p2.x;
+            const djy = p.y - p2.y;
+            const d = Math.sqrt(djx * djx + djy * djy);
+
+            if (d < 110) {
+              const alpha = (1 - d / 110) * 0.18;
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.strokeStyle = `rgba(0, 255, 136, ${alpha})`;
+              ctx.lineWidth = 0.7;
+              ctx.stroke();
+            }
+          }
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+    })();
+
+    /* ==========================================================================
+       2. INTERSECTION OBSERVER FOR SMOOTH SCROLL REVEALS
+       ========================================================================== */
+    (function initScrollReveals() {
+      const revealElements = document.querySelectorAll('.reveal-on-scroll');
+      if (!revealElements.length) return;
+
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries, obs) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('revealed');
+              obs.unobserve(entry.target);
+            }
+          });
+        }, {
+          root: null,
+          rootMargin: '0px 0px -60px 0px',
+          threshold: 0.12
+        });
+
+        revealElements.forEach(el => observer.observe(el));
+      } else {
+        // Fallback if IntersectionObserver is unsupported
+        revealElements.forEach(el => el.classList.add('revealed'));
+      }
+    })();
+
+    /* ==========================================================================
+       3. HERO NAME GLITCH ON LOAD & HOVER
+       ========================================================================== */
+    (function initHeroGlitch() {
+      const glitchEl = document.getElementById('heroGlitchText');
+      if (!glitchEl) return;
+
+      // Trigger glitch sequence on initial page load
+      glitchEl.classList.add('is-glitching');
+      setTimeout(() => {
+        glitchEl.classList.remove('is-glitching');
+      }, 2400);
+
+      // Hacker character shuffle effect on hover
+      const originalText = glitchEl.getAttribute('data-text') || 'Surya N';
+      const glyphs = '!<>-_\\/[]{}—=+*^?#________';
+      let interval = null;
+
+      glitchEl.addEventListener('mouseenter', () => {
+        let iteration = 0;
+        clearInterval(interval);
+
+        interval = setInterval(() => {
+          glitchEl.innerText = originalText
+            .split('')
+            .map((letter, index) => {
+              if (index < iteration) return originalText[index];
+              return glyphs[Math.floor(Math.random() * glyphs.length)];
+            })
+            .join('');
+
+          if (iteration >= originalText.length) {
+            clearInterval(interval);
+            glitchEl.innerText = originalText;
+          }
+          iteration += 1 / 3;
+        }, 30);
+      });
+    })();
+
+    /* ==========================================================================
+       HERO MINI-TERMINAL ANIMATION (./whoami.sh SCRIPT & STATS)
+       ========================================================================== */
+    const heroTypingEl = document.getElementById('heroTypingText');
+    const heroOutputEl = document.getElementById('heroTermOutput');
+    const heroReplayBtn = document.getElementById('heroTermReplayBtn');
+    const heroTermBody = document.getElementById('heroTermBody');
+
+    const heroStats = [
+      { prefix: "[+]", label: "Script Engine :", val: "./whoami.sh --target=surya --profile=offsec", cls: "" },
+      { prefix: "[*]", label: "Target Identity :", val: "Surya N", cls: "green" },
+      { prefix: "[*]", label: "Status :", val: "3rd-Year B.E. Cyber Security", cls: "green" },
+      { prefix: "[*]", label: "Institution :", val: "CMS College of Engineering and Technology", cls: "" },
+      { prefix: "[*]", label: "Specialty :", val: "Web App Pen Testing & API Security", cls: "purple" },
+      { prefix: "[*]", label: "Core Vectors :", val: "IDOR | GraphQL Introspection | XSS | SQLi", cls: "" },
+      { prefix: "[*]", label: "Security Arsenal :", val: "surface-attack, domain-analyzer, securemail", cls: "purple" },
+      { prefix: "[*]", label: "Top Disclosures :", val: "relfood.com, coox.in, homebytes.co.in", cls: "amber" },
+      { prefix: "[✔]", label: "System Status :", val: "Ready // CLEARANCE: RED TEAM", cls: "badge-ready" }
+    ];
+
+    let heroTypingActive = false;
+    let heroTypingTimeout = null;
+
+    function runHeroMiniTerminalAnimation() {
+      if (heroTypingActive) return;
+      heroTypingActive = true;
+
+      if (heroTypingTimeout) clearTimeout(heroTypingTimeout);
+      if (heroTypingEl) heroTypingEl.textContent = '';
+      if (heroOutputEl) heroOutputEl.innerHTML = '';
+
+      const cmdText = './whoami.sh';
+      let charIdx = 0;
+
+      function typeChar() {
+        if (charIdx < cmdText.length) {
+          if (heroTypingEl) heroTypingEl.textContent += cmdText.charAt(charIdx);
+          charIdx++;
+          heroTypingTimeout = setTimeout(typeChar, 45 + Math.random() * 40);
+        } else {
+          heroTypingTimeout = setTimeout(() => {
+            renderHeroStats(0);
+          }, 300);
+        }
+      }
+
+      function renderHeroStats(idx) {
+        if (!heroOutputEl) {
+          heroTypingActive = false;
+          return;
+        }
+
+        if (idx < heroStats.length) {
+          const item = heroStats[idx];
+          const lineEl = document.createElement('div');
+          lineEl.className = 'hero-stat-line';
+          lineEl.innerHTML = `
+            <span class="hero-stat-prefix">${item.prefix}</span>
+            <span class="hero-stat-label">${item.label}</span>
+            <span class="hero-stat-val ${item.cls}">${item.val}</span>
+          `;
+          heroOutputEl.appendChild(lineEl);
+          if (heroTermBody) heroTermBody.scrollTop = heroTermBody.scrollHeight;
+
+          heroTypingTimeout = setTimeout(() => {
+            renderHeroStats(idx + 1);
+          }, 85);
+        } else {
+          // Trailing active prompt line
+          const promptLine = document.createElement('div');
+          promptLine.className = 'term-command-line';
+          promptLine.style.marginTop = '0.65rem';
+          promptLine.style.marginBottom = '0';
+          promptLine.innerHTML = `
+            <span class="prompt-user">surya@kali</span><span class="prompt-sep">:</span><span class="prompt-path">~</span><span class="prompt-symbol">$</span>
+            <span class="prompt-cursor">_</span>
+          `;
+          heroOutputEl.appendChild(promptLine);
+          if (heroTermBody) heroTermBody.scrollTop = heroTermBody.scrollHeight;
+          heroTypingActive = false;
+        }
+      }
+
+      setTimeout(typeChar, 350);
+    }
+
+    if (heroReplayBtn) {
+      heroReplayBtn.addEventListener('click', () => {
+        heroTypingActive = false;
+        runHeroMiniTerminalAnimation();
+      });
+    }
+
+    // Trigger terminal animation on DOM ready
+    window.addEventListener('DOMContentLoaded', () => {
+      runHeroMiniTerminalAnimation();
+    });
+
+    /* ==========================================================================
+       4. LIVE SANDBOX SIMULATOR (MULTI-TOOL: DOMAIN ANALYZER, SURFACE-ATTACK, SECUREMAIL)
+       Interactive Tool Simulation with Dynamic Presets, Progress & Mock JSON
+       ========================================================================== */
+    let currentTool = 'domain-security-analyzer';
+    let isScanning = false;
+    let lastScanJson = null;
+
+    const toolConfigs = {
+      'domain-security-analyzer': {
+        name: 'domain-security-analyzer',
+        title: 'surya@sandbox:~/domain-security-analyzer (interactive demo)',
+        label: 'Target Domain for DNS & SSL/TLS Audit:',
+        placeholder: 'e.g. relfood.com, example.com, coox.in',
+        defaultValue: 'example.com',
+        btnText: 'Scan Domain',
+        engineText: 'domain-security-analyzer v2.4 (Python/dnspython/OpenSSL)',
+        presets: [
+          { text: 'example.com', val: 'example.com' },
+          { text: 'relfood.com (Disclosed Scope)', val: 'relfood.com' },
+          { text: 'coox.in (Bounty Target)', val: 'coox.in' },
+          { text: 'homebytes.co.in', val: 'homebytes.co.in' }
+        ],
+        steps: [
+          { pct: 20, msg: '[01/05] Querying DNS root servers for Authoritative Nameservers...', log: (t) => `[+] Found NS records: ns1.${t}, ns2.${t}` },
+          { pct: 45, msg: '[02/05] Resolving A, AAAA, MX, and TXT records...', log: (t) => `[+] Extracted IPv4, IPv6, and Priority Mail Exchangers for ${t}.` },
+          { pct: 65, msg: '[03/05] Inspecting SPF (Sender Policy Framework) & DMARC enforcement...', log: (t) => `[*] SPF Status: EVALUATING... | DMARC Record: CHECKING...` },
+          { pct: 85, msg: '[04/05] Initiating TLS 1.3 handshake & Cipher suite assessment...', log: (t) => `[+] TLS 1.3 active. Certificate Authority: DigiCert / Let's Encrypt` },
+          { pct: 100, msg: '[05/05] Evaluating HTTP Security Headers & CAA records...', log: (t) => `[+] Domain assessment complete. Formatting structured JSON telemetry...` }
+        ],
+        generateJson: (target) => {
+          const isRelfood = target.includes('relfood');
+          const isCoox = target.includes('coox');
+          return {
+            scan_id: `DSA-${Math.floor(100000 + Math.random() * 900000)}`,
+            tool: "domain-security-analyzer",
+            target_domain: target,
+            timestamp: new Date().toISOString(),
+            dns_records: {
+              A: ["192.0.2.42", "192.0.2.88"],
+              AAAA: ["2001:db8::8a2e:370:7334"],
+              MX: [`10 mail.${target}`, `20 alt-mail.${target}`],
+              NS: [`ns1.${target}`, `ns2.${target}`],
+              DNSSEC: !isRelfood
+            },
+            email_security: {
+              spf_record: `v=spf1 include:_spf.${target} ~all`,
+              spf_valid: true,
+              dmarc_record: `v=DMARC1; p=reject; rua=mailto:dmarc-reports@${target}; pct=100`,
+              dmarc_policy: "reject",
+              dkim_status: "Configured (2048-bit RSA)"
+            },
+            ssl_tls_telemetry: {
+              https_accessible: true,
+              active_protocol: "TLSv1.3",
+              cipher_suite: "TLS_AES_256_GCM_SHA384",
+              issuer: "GlobalSign GCC R3 Alpha CA",
+              days_until_expiration: 342
+            },
+            security_headers: {
+              "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+              "Content-Security-Policy": "default-src 'self'; script-src 'self' 'nonce-cyber';",
+              "X-Frame-Options": "DENY",
+              "X-Content-Type-Options": "nosniff"
+            },
+            overall_security_grade: isRelfood ? "B+ (GraphQL Introspection Disclosed)" : (isCoox ? "A- (OTP Rate-Limit Hardened)" : "A+ (Hardened)")
+          };
+        }
+      },
+      'surface-attack': {
+        name: 'surface-attack',
+        title: 'surya@sandbox:~/surface-attack (mini-pentest-framework)',
+        label: 'Target Host, IP Address or CIDR Subnet:',
+        placeholder: 'e.g. 198.51.100.14, scanme.nmap.org, 10.0.4.0/24',
+        defaultValue: '198.51.100.14',
+        btnText: 'Audit Surface',
+        engineText: 'surface-attack v1.2 (Python Socket Multithreading / Nmap Engine)',
+        presets: [
+          { text: '198.51.100.14 (Staging Host)', val: '198.51.100.14' },
+          { text: 'scanme.nmap.org (Lab)', val: 'scanme.nmap.org' },
+          { text: '10.0.4.0/24 (VPC Range)', val: '10.0.4.0/24' },
+          { text: 'api.relfood.com (Disclosed Scope)', val: 'api.relfood.com' }
+        ],
+        steps: [
+          { pct: 20, msg: '[01/05] Ping sweep & ICMP echo discovery on target scope...', log: (t) => `[+] Host is ALIVE (latency: 14.2ms). OS Fingerprint: Linux 6.1` },
+          { pct: 45, msg: '[02/05] Initiating multi-threaded TCP SYN scan across top 1000 ports...', log: (t) => `[+] Open ports detected: 22, 80, 443, 5000, 9200` },
+          { pct: 65, msg: '[03/05] Grabbing raw service banners & protocol handshakes...', log: (t) => `[+] Port 5000: Werkzeug/Python Flask REST API detected.` },
+          { pct: 85, msg: '[04/05] Probing hidden endpoints, API routes & admin perimeters...', log: (t) => `[!] Leaked routes found: /api/v1/users/export, /graphql, /metrics` },
+          { pct: 100, msg: '[05/05] Correlating CVE signatures & compiling attack surface score...', log: (t) => `[✔] Reconnaissance completed. Compiling structured ASM JSON telemetry...` }
+        ],
+        generateJson: (target) => {
+          return {
+            scan_id: `ASM-${Math.floor(100000 + Math.random() * 900000)}`,
+            tool: "surface-attack",
+            target: target,
+            timestamp: new Date().toISOString(),
+            host_status: "UP",
+            os_detection: {
+              fingerprint: "Linux Kernel 6.1 (Debian/Ubuntu 22.04 LTS)",
+              accuracy: "98.4%",
+              uptime_guess: "42 days"
+            },
+            open_ports: [
+              { port: 22, protocol: "tcp", service: "ssh", product: "OpenSSH 8.9p1 Ubuntu", state: "open" },
+              { port: 80, protocol: "tcp", service: "http", product: "nginx/1.18.0", state: "open" },
+              { port: 443, protocol: "tcp", service: "https", product: "nginx/1.18.0 (TLS 1.3)", state: "open" },
+              { port: 5000, protocol: "tcp", service: "http-api", product: "Werkzeug Python/3.11", state: "open" },
+              { port: 9200, protocol: "tcp", service: "elasticsearch", product: "Elasticsearch REST API 8.7.0 (No Auth)", state: "vulnerable" }
+            ],
+            discovered_endpoints: [
+              { path: "/api/v1/users/export", risk: "HIGH", detail: "Potential IDOR authorization bypass" },
+              { path: "/graphql", risk: "MEDIUM", detail: "Schema introspection enabled" },
+              { path: "/metrics", risk: "LOW", detail: "Prometheus metric telemetry leaked" }
+            ],
+            attack_surface_rating: {
+              overall_risk: "HIGH (CVSS 8.4)",
+              exposed_services_count: 5,
+              critical_findings: 2,
+              recommendation: "Enforce authentication on port 9200 and disable GraphQL introspection in production."
+            }
+          };
+        }
+      },
+      'securemail': {
+        name: 'securemail',
+        title: 'surya@sandbox:~/securemail (ai-phishing-defense)',
+        label: 'Email Header, Subject Line, or Suspicious URL Payload:',
+        placeholder: 'e.g. Urgent: Account Verification Required - http://pay-security-update.xyz/verify',
+        defaultValue: 'Urgent: Account Verification Required - http://pay-security-update.xyz/verify',
+        btnText: 'Analyze Threat',
+        engineText: 'securemail v3.1 (Flask / Scikit-Learn NLP / DNSPython)',
+        presets: [
+          { text: 'Urgent: Reset Password (Phishing)', val: 'Urgent: Reset your account password immediately - https://pay-security-update.xyz/login' },
+          { text: 'Overdue Invoice #9842.eml (Spoofed)', val: 'Overdue Invoice #9842 - wire payment to update-billing.co' },
+          { text: 'alert-security@paypal-auth-verify.xyz', val: 'Security Alert: Unauthorized access detected from IP 185.220.101.5' },
+          { text: 'notifications@github.com (Benign)', val: 'Your pull request #42 was successfully merged into main' }
+        ],
+        steps: [
+          { pct: 20, msg: '[01/05] Parsing email headers & authenticating SPF/DKIM/DMARC alignment...', log: (t) => `[!] SPF: SOFTFAIL | DKIM: MISSING | DMARC: ALIGNMENT_FAILED` },
+          { pct: 45, msg: '[02/05] Extracting URLs, evaluating Punycode, WHOIS age & redirection hops...', log: (t) => `[!] Found suspicious domain registered 3 days ago: pay-security-update.xyz` },
+          { pct: 65, msg: '[03/05] NLP Tokenization & TF-IDF vectorization of psychological triggers...', log: (t) => `[*] Extracted urgent triggers: 'suspended', 'verify immediately', 'within 24 hours'` },
+          { pct: 85, msg: '[04/05] Running Scikit-Learn Classifier & Naive Bayes threat scoring...', log: (t) => `[!] ML Model output: 0.986 phishing probability match.` },
+          { pct: 100, msg: '[05/05] Compiling threat telemetry & defensive mitigation advisories...', log: (t) => `[✔] Phishing analysis finalized. Rendering threat intelligence JSON...` }
+        ],
+        generateJson: (target) => {
+          const isBenign = target.includes('github') || target.includes('merged');
+          return {
+            analysis_id: `SECMAIL-${Math.floor(100000 + Math.random() * 900000)}`,
+            tool: "securemail",
+            input_payload: target,
+            timestamp: new Date().toISOString(),
+            authentication_audit: {
+              spf_status: isBenign ? "PASS" : "FAIL (Unauthorized Sending IP)",
+              dkim_status: isBenign ? "PASS (Valid Signature)" : "FAIL (Invalid / Stripped Signature)",
+              dmarc_policy: isBenign ? "PASS (Aligned)" : "REJECT_ENFORCED (Spoofing Detected)"
+            },
+            url_threat_intelligence: {
+              extracted_urls: isBenign ? ["https://github.com/notifications"] : ["http://pay-security-update.xyz/verify"],
+              punycode_typosquatting: isBenign ? false : true,
+              domain_age_days: isBenign ? 4890 : 3,
+              threat_blacklist_hit: isBenign ? false : true,
+              ssl_certificate: isBenign ? "DigiCert TLS" : "Self-Signed / Untrusted"
+            },
+            nlp_heuristics: {
+              urgency_score: isBenign ? "LOW (0.05)" : "CRITICAL (0.96)",
+              coercive_language_detected: isBenign ? false : true,
+              flagged_keywords: isBenign ? ["update", "notification"] : ["immediately", "suspended", "verify account", "unauthorized access"]
+            },
+            ai_classification_verdict: {
+              model: "Scikit-Learn MultinomialNB + TF-IDF Vectorizer",
+              phishing_probability: isBenign ? "2.1%" : "98.6%",
+              classification: isBenign ? "LEGITIMATE_COMMUNICATION" : "MALICIOUS SPEAR-PHISHING",
+              confidence: "HIGH",
+              recommended_action: isBenign ? "DELIVER_TO_INBOX" : "QUARANTINE_AND_BLOCK_SENDER"
+            }
+          };
+        }
+      }
+    };
+
+    const domainInput = document.getElementById('sandboxDomainInput');
+    const inputLabel = document.getElementById('sandboxInputLabel');
+    const runScanBtn = document.getElementById('runScanBtn');
+    const runScanBtnText = document.getElementById('runScanBtnText');
+    const termTitleText = document.getElementById('sandboxTermTitleText');
+    const engineText = document.getElementById('sandboxEngineText');
+    const presetsContainer = document.getElementById('sandboxPresetsContainer');
+    const progressWrapper = document.getElementById('sandboxProgressWrapper');
+    const progressBar = document.getElementById('scanProgressBar');
+    const statusText = document.getElementById('scanStatusText');
+    const percentText = document.getElementById('scanPercentText');
+    const outputArea = document.getElementById('sandboxOutput');
+    const copyJsonBtn = document.getElementById('copyJsonBtn');
+    const clearBtn = document.getElementById('clearSandboxBtn');
+
+    function switchSandboxTool(toolKey, defaultVal) {
+      if (!toolConfigs[toolKey]) return;
+      currentTool = toolKey;
+      const cfg = toolConfigs[toolKey];
+
+      // Update active tab buttons
+      ['tabDomainAnalyzer', 'tabSurfaceAttack', 'tabSecureMail'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.classList.remove('active');
+      });
+
+      if (toolKey === 'domain-security-analyzer') {
+        const tab = document.getElementById('tabDomainAnalyzer');
+        if (tab) tab.classList.add('active');
+      } else if (toolKey === 'surface-attack') {
+        const tab = document.getElementById('tabSurfaceAttack');
+        if (tab) tab.classList.add('active');
+      } else if (toolKey === 'securemail') {
+        const tab = document.getElementById('tabSecureMail');
+        if (tab) tab.classList.add('active');
+      }
+
+      // Update terminal title & input panel
+      if (termTitleText) termTitleText.textContent = cfg.title;
+      if (inputLabel) inputLabel.textContent = cfg.label;
+      if (domainInput) {
+        domainInput.placeholder = cfg.placeholder;
+        domainInput.value = defaultVal || cfg.defaultValue;
+      }
+      if (runScanBtnText) runScanBtnText.textContent = cfg.btnText;
+      if (engineText) engineText.textContent = cfg.engineText;
+
+      // Render Presets
+      if (presetsContainer) {
+        presetsContainer.innerHTML = '<span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">Quick Presets:</span>';
+        cfg.presets.forEach(p => {
+          const btn = document.createElement('button');
+          btn.className = 'preset-chip';
+          btn.textContent = p.text;
+          btn.onclick = () => setPreset(p.val);
+          presetsContainer.appendChild(btn);
+        });
+      }
+
+      // Update terminal initial message
+      if (outputArea) {
+        outputArea.innerHTML = `
+          <div class="term-msg step" style="color: var(--neon-blue);">
+            [+] ${cfg.name} environment loaded.
+          </div>
+          <div class="term-msg step">
+            [*] Target parameter ready. Click <strong style="color: #fff;">'${cfg.btnText}'</strong> to execute simulation.
+          </div>
+          <div class="term-msg step" style="color: var(--text-muted);">
+            // Engine: ${cfg.engineText}
+          </div>
+        `;
+      }
+
+      if (progressWrapper) progressWrapper.classList.remove('active');
+      lastScanJson = null;
+    }
+
+    function setPreset(val) {
+      if (domainInput) domainInput.value = val;
+    }
+
+    function scrollToSandbox() {
+      const sandboxEl = document.getElementById('sandbox');
+      if (sandboxEl) sandboxEl.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function runSandboxScan() {
+      if (isScanning) return;
+      const cfg = toolConfigs[currentTool];
+      const target = (domainInput.value || '').trim() || cfg.defaultValue;
+
+      isScanning = true;
+      runScanBtn.disabled = true;
+      runScanBtn.style.opacity = '0.6';
+      progressWrapper.classList.add('active');
+      progressBar.style.width = '0%';
+      percentText.textContent = '0%';
+
+      outputArea.innerHTML = `
+        <div class="term-msg step" style="color: var(--neon-blue);">
+          [+] [ENGINE START] Initializing ${cfg.name} for: <strong style="color:#fff;">${escapeHTML(target)}</strong>
+        </div>
+      `;
+
+      const steps = cfg.steps;
+      let currentStep = 0;
+
+      function nextStep() {
+        if (currentStep < steps.length) {
+          const s = steps[currentStep];
+          statusText.textContent = s.msg;
+          percentText.textContent = `${s.pct}%`;
+          progressBar.style.width = `${s.pct}%`;
+
+          const logDiv = document.createElement('div');
+          logDiv.className = 'term-msg step';
+          logDiv.innerHTML = s.log(target);
+          outputArea.appendChild(logDiv);
+          outputArea.scrollTop = outputArea.scrollHeight;
+
+          currentStep++;
+          setTimeout(nextStep, 360);
+        } else {
+          setTimeout(() => {
+            finishSandboxScan(target, cfg);
+          }, 280);
+        }
+      }
+
+      nextStep();
+    }
+
+    function finishSandboxScan(target, cfg) {
+      isScanning = false;
+      runScanBtn.disabled = false;
+      runScanBtn.style.opacity = '1';
+
+      const mockData = cfg.generateJson(target);
+      lastScanJson = JSON.stringify(mockData, null, 2);
+
+      const finishBanner = document.createElement('div');
+      finishBanner.className = 'term-msg success';
+      finishBanner.style.marginTop = '10px';
+      finishBanner.style.borderTop = '1px solid rgba(0, 255, 136, 0.25)';
+      finishBanner.style.paddingTop = '8px';
+      finishBanner.innerHTML = `[+] SCAN COMPLETED: ${escapeHTML(target)} (${cfg.name})`;
+      outputArea.appendChild(finishBanner);
+
+      const jsonPre = document.createElement('pre');
+      jsonPre.style.marginTop = '10px';
+      jsonPre.style.color = '#f1f5f9';
+      jsonPre.style.fontFamily = 'var(--font-mono)';
+      jsonPre.style.fontSize = '0.82rem';
+      jsonPre.style.lineHeight = '1.5';
+      jsonPre.innerHTML = syntaxHighlightJSON(mockData);
+
+      outputArea.appendChild(jsonPre);
+      outputArea.scrollTop = outputArea.scrollHeight;
+
+      showToast(`Scan complete for ${target} [${cfg.name}]`);
+    }
+
+    function syntaxHighlightJSON(json) {
+      if (typeof json !== 'string') {
+        json = JSON.stringify(json, undefined, 2);
+      }
+      json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        let cls = 'json-number';
+        if (/^"/.test(match)) {
+          if (/:$/.test(match)) {
+            cls = 'json-key';
+          } else {
+            cls = 'json-string';
+          }
+        } else if (/true|false/.test(match)) {
+          cls = 'json-boolean';
+        } else if (/null/.test(match)) {
+          cls = 'json-null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+      });
+    }
+
+    if (runScanBtn) runScanBtn.addEventListener('click', runSandboxScan);
+    if (domainInput) {
+      domainInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') runSandboxScan();
+      });
+    }
+
+    if (copyJsonBtn) {
+      copyJsonBtn.addEventListener('click', () => {
+        if (!lastScanJson) {
+          showToast('No active scan telemetry to copy yet.');
+          return;
+        }
+        navigator.clipboard.writeText(lastScanJson).then(() => {
+          showToast('JSON telemetry copied to clipboard!');
+        }).catch(() => {
+          showToast('Telemetry ready in terminal.');
+        });
+      });
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        progressWrapper.classList.remove('active');
+        const cfg = toolConfigs[currentTool];
+        outputArea.innerHTML = `
+          <div class="term-msg step" style="color: var(--neon-blue);">
+            [+] Terminal output cleared. Ready for next assessment.
+          </div>
+          <div class="term-msg step" style="color: var(--text-muted);">
+            // Active Tool: ${cfg.name}
+          </div>
+        `;
+        lastScanJson = null;
+      });
+    }
+
+    /* ==========================================================================
+       5. NAVIGATION & MOBILE DRAWER
+       ========================================================================== */
+    const mobileBtn = document.getElementById('mobileToggleBtn');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+
+    if (mobileBtn && mobileDrawer) {
+      mobileBtn.addEventListener('click', () => {
+        mobileDrawer.classList.toggle('open');
+      });
+
+      document.querySelectorAll('.mobile-link').forEach(link => {
+        link.addEventListener('click', () => {
+          mobileDrawer.classList.remove('open');
+        });
+      });
+    }
+
+    // Set Copyright Year
+    const yearSpan = document.getElementById('currentYear');
+    if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+
+    /* ==========================================================================
+       6. EMAIL CLIPBOARD COPY
+       ========================================================================== */
+    const copyBtn = document.getElementById('copyEmailBtn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        const email = 'suryanagalingam877@gmail.com';
+        navigator.clipboard.writeText(email).then(() => {
+          showToast(`Copied to clipboard: ${email}`);
+        }).catch(() => {
+          showToast(`Direct email: ${email}`);
+        });
+      });
+    }
+
+    /* ==========================================================================
+       7. MODAL CONTROLLERS & RESUME
+       ========================================================================== */
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.add('open');
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.remove('open');
+    }
+
+    document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) backdrop.classList.remove('open');
+      });
+    });
+
+    ['navResumeBtn', 'heroDownloadResumeBtn', 'mobileResumeBtn'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) btn.addEventListener('click', () => openModal('resumeModal'));
+    });
+
+    const verifyBtn = document.getElementById('verifyDossierBtn');
+    if (verifyBtn) {
+      verifyBtn.addEventListener('click', () => {
+        showToast('B.E. Cyber Security & Offensive Security Credentials Verified [VALID]');
+      });
+    }
+
+    function downloadResumePDF() {
+      showToast('Preparing formatted Resume preview...');
+      setTimeout(() => {
+        window.print();
+      }, 350);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastNotification');
+      const text = document.getElementById('toastMsg');
+      if (!toast || !text) return;
+
+      text.textContent = msg;
+      toast.classList.add('show');
+
+      clearTimeout(window._toastTimeout);
+      window._toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3200);
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, 
+        tag => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          "'": '&#39;',
+          '"': '&quot;'
+        }[tag] || tag)
+      );
+    }
+
+    /* ==========================================================================
+       8. CONTACT FORM SUBMISSION
+       ========================================================================== */
+    function handleContactSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('contactName').value;
+      const email = document.getElementById('contactEmail').value;
+      const msg = document.getElementById('contactMsg').value;
+
+      showToast(`Encrypted message queued from ${name}. Opening mail client...`);
+
+      setTimeout(() => {
+        const mailtoUrl = `mailto:suryanagalingam877@gmail.com?subject=Security%20Inquiry%20from%20${encodeURIComponent(name)}&body=${encodeURIComponent(msg)}%0A%0AFrom:%20${encodeURIComponent(email)}`;
+        window.location.href = mailtoUrl;
+      }, 700);
+
+      e.target.reset();
+    }
+  </script>
+</body>
+</html>

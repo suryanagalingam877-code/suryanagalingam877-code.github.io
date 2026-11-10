@@ -1,0 +1,9 @@
+# Ignore local development and unrelated files
+.venv/
+.vscode/
+chatGPT/
+securemail/
+*.bak
+*.py
+*.jpg
+__pycache__/
