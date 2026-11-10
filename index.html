@@ -1003,6 +1003,157 @@
       letter-spacing: 0.05em;
     }
 
+    
+    /* Interactive Terminal Elements */
+    .mini-term-quick-chips {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.6rem 1.25rem;
+      background: #0d1510;
+      border-top: 1px solid rgba(0, 255, 136, 0.15);
+      border-bottom: 1px solid rgba(0, 255, 136, 0.1);
+    }
+
+    .chips-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-right: 0.2rem;
+    }
+
+    .term-chip {
+      background: rgba(0, 255, 136, 0.08);
+      border: 1px solid rgba(0, 255, 136, 0.25);
+      color: var(--neon-green);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 0.18rem 0.55rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      white-space: nowrap;
+    }
+
+    .term-chip:hover {
+      background: var(--neon-green);
+      color: #020503;
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .term-chip.purple {
+      background: rgba(176, 38, 255, 0.1);
+      border-color: rgba(176, 38, 255, 0.35);
+      color: var(--cyber-purple-light);
+    }
+
+    .term-chip.purple:hover {
+      background: var(--cyber-purple);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(176, 38, 255, 0.5);
+    }
+
+    .term-interactive-line {
+      display: flex;
+      align-items: center;
+      margin-top: 0.65rem;
+      font-weight: 600;
+      position: relative;
+    }
+
+    .term-input-field {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-size: 0.83rem;
+      font-weight: 700;
+      margin-left: 0.45rem;
+      caret-color: var(--neon-green);
+      padding: 0;
+    }
+
+    .term-file-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      margin: 0.4rem 0;
+      font-family: var(--font-mono);
+      font-size: 0.79rem;
+    }
+
+    .term-file-item {
+      display: flex;
+      align-items: baseline;
+      gap: 0.65rem;
+      padding: 0.15rem 0.35rem;
+      border-radius: 3px;
+      transition: background 0.15s ease;
+    }
+
+    .term-file-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .term-file-item.dir .file-name {
+      color: #00ff88;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .term-file-item.dir .file-name:hover {
+      text-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+    }
+
+    .term-file-item.exec .file-name {
+      color: #38bdf8;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .term-file-item.file .file-name {
+      color: #cbd5e1;
+      cursor: pointer;
+    }
+
+    .file-perm {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      flex-shrink: 0;
+      min-width: 85px;
+    }
+
+    .file-desc {
+      color: var(--text-secondary);
+      font-size: 0.74rem;
+    }
+
+    .term-block-card {
+      background: rgba(0, 255, 136, 0.05);
+      border-left: 3px solid var(--neon-green);
+      padding: 0.65rem 0.85rem;
+      margin: 0.5rem 0;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.79rem;
+      line-height: 1.6;
+    }
+
+    .term-block-card.purple {
+      background: rgba(176, 38, 255, 0.06);
+      border-left-color: var(--cyber-purple);
+    }
+
+    .term-block-card.amber {
+      background: rgba(245, 158, 11, 0.06);
+      border-left-color: var(--cyber-amber);
+    }
+
     /* Terminal Footer Status */
     .mini-term-footer {
       background: #111814;
@@ -2464,22 +2615,41 @@
                 </div>
               </div>
 
+              <!-- Quick Command Chips Bar -->
+              <div class="mini-term-quick-chips">
+                <span class="chips-label">// CMDS:</span>
+                <button class="term-chip" onclick="executeTerminalCommand('ls')">ls</button>
+                <button class="term-chip" onclick="executeTerminalCommand('cd surface-attack')">cd surface-attack</button>
+                <button class="term-chip" onclick="executeTerminalCommand('cd domain-security-analyzer')">cd domain-security-analyzer</button>
+                <button class="term-chip" onclick="executeTerminalCommand('cd securemail')">cd securemail</button>
+                <button class="term-chip purple" onclick="executeTerminalCommand('disclosures')">disclosures</button>
+                <button class="term-chip" onclick="executeTerminalCommand('whoami')">whoami</button>
+                <button class="term-chip purple" onclick="executeTerminalCommand('help')">help</button>
+                <button class="term-chip" onclick="executeTerminalCommand('clear')">clear</button>
+              </div>
+
               <!-- Terminal Interior -->
-              <div class="mini-term-body" id="heroTermBody">
+              <div class="mini-term-body" id="heroTermBody" onclick="focusTerminalInput()">
                 <div class="term-telemetry-banner">
                   <span>KALI GNU/LINUX 2026.4 // PTS/0 // OFFSEC KERNEL</span>
-                  <span>SECURITY READY</span>
+                  <span>INTERACTIVE SHELL</span>
                 </div>
 
-                <!-- Active Animated Typing Line -->
-                <div class="term-command-line">
+                <!-- Initial Boot Command Line -->
+                <div class="term-command-line" id="heroInitialCmdLine">
                   <span class="prompt-user">surya@kali</span><span class="prompt-sep">:</span><span class="prompt-path">~</span><span class="prompt-symbol">$</span>
                   <span class="prompt-typed" id="heroTypingText"></span>
                   <span class="prompt-cursor" id="heroBlinkCursor">█</span>
                 </div>
 
-                <!-- Stream Output (Appended via JS) -->
+                <!-- Execution Output Stream & History -->
                 <div class="term-stream-output" id="heroTermOutput"></div>
+
+                <!-- Live Interactive Command Input Line -->
+                <div class="term-interactive-line" id="heroInteractiveLine">
+                  <span class="prompt-user">surya@kali</span><span class="prompt-sep">:</span><span class="prompt-path" id="heroCurrentPath">~</span><span class="prompt-symbol">$</span>
+                  <input type="text" id="heroTermInput" class="term-input-field" autocomplete="off" spellcheck="false" placeholder="type 'ls', 'cd <project>', 'test', 'disclosures'..." aria-label="Terminal Command Input">
+                </div>
               </div>
 
               <!-- Terminal Footer Status Bar -->
@@ -3633,12 +3803,20 @@
     })();
 
     /* ==========================================================================
-       HERO MINI-TERMINAL ANIMATION (./whoami.sh SCRIPT & STATS)
+       HERO MINI-TERMINAL ANIMATION & INTERACTIVE LINUX BASH SHELL
+       Supports: ls, cd <project>, test, cat, disclosures, whoami, clear, help
        ========================================================================== */
     const heroTypingEl = document.getElementById('heroTypingText');
     const heroOutputEl = document.getElementById('heroTermOutput');
     const heroReplayBtn = document.getElementById('heroTermReplayBtn');
     const heroTermBody = document.getElementById('heroTermBody');
+    const heroTermInput = document.getElementById('heroTermInput');
+    const heroCurrentPathEl = document.getElementById('heroCurrentPath');
+    const heroInitialCmdLine = document.getElementById('heroInitialCmdLine');
+
+    let currentTermDir = '~';
+    const commandHistory = [];
+    let historyIndex = -1;
 
     const heroStats = [
       { prefix: "[+]", label: "Script Engine :", val: "./whoami.sh --target=surya --profile=offsec", cls: "" },
@@ -3660,8 +3838,11 @@
       heroTypingActive = true;
 
       if (heroTypingTimeout) clearTimeout(heroTypingTimeout);
+      if (heroInitialCmdLine) heroInitialCmdLine.style.display = 'flex';
       if (heroTypingEl) heroTypingEl.textContent = '';
       if (heroOutputEl) heroOutputEl.innerHTML = '';
+      currentTermDir = '~';
+      updatePromptPath();
 
       const cmdText = './whoami.sh';
       let charIdx = 0;
@@ -3670,11 +3851,11 @@
         if (charIdx < cmdText.length) {
           if (heroTypingEl) heroTypingEl.textContent += cmdText.charAt(charIdx);
           charIdx++;
-          heroTypingTimeout = setTimeout(typeChar, 45 + Math.random() * 40);
+          heroTypingTimeout = setTimeout(typeChar, 45 + Math.random() * 35);
         } else {
           heroTypingTimeout = setTimeout(() => {
             renderHeroStats(0);
-          }, 300);
+          }, 280);
         }
       }
 
@@ -3698,24 +3879,496 @@
 
           heroTypingTimeout = setTimeout(() => {
             renderHeroStats(idx + 1);
-          }, 85);
+          }, 80);
         } else {
-          // Trailing active prompt line
-          const promptLine = document.createElement('div');
-          promptLine.className = 'term-command-line';
-          promptLine.style.marginTop = '0.65rem';
-          promptLine.style.marginBottom = '0';
-          promptLine.innerHTML = `
-            <span class="prompt-user">surya@kali</span><span class="prompt-sep">:</span><span class="prompt-path">~</span><span class="prompt-symbol">$</span>
-            <span class="prompt-cursor">_</span>
-          `;
-          heroOutputEl.appendChild(promptLine);
+          // Add helpful interactive hint
+          const hint = document.createElement('div');
+          hint.className = 'term-msg step';
+          hint.style.marginTop = '0.5rem';
+          hint.style.fontSize = '0.78rem';
+          hint.style.color = 'var(--neon-green)';
+          hint.innerHTML = `[i] Interactive shell ready. Click below or type <strong style="color:#fff;">'ls'</strong> to browse projects, or <strong style="color:#fff;">'help'</strong> for commands.`;
+          heroOutputEl.appendChild(hint);
+
           if (heroTermBody) heroTermBody.scrollTop = heroTermBody.scrollHeight;
           heroTypingActive = false;
+          focusTerminalInput();
         }
       }
 
-      setTimeout(typeChar, 350);
+      setTimeout(typeChar, 300);
+    }
+
+    function updatePromptPath() {
+      if (heroCurrentPathEl) heroCurrentPathEl.textContent = currentTermDir;
+    }
+
+    function focusTerminalInput() {
+      if (heroTermInput) {
+        heroTermInput.focus();
+      }
+    }
+
+    function executeTerminalCommand(rawCmd) {
+      const cmd = (rawCmd || '').trim();
+      if (!cmd) return;
+
+      commandHistory.push(cmd);
+      historyIndex = commandHistory.length;
+
+      // Echo command line in terminal output
+      const echoLine = document.createElement('div');
+      echoLine.className = 'term-command-line';
+      echoLine.style.marginTop = '0.65rem';
+      echoLine.style.marginBottom = '0.35rem';
+      echoLine.innerHTML = `
+        <span class="prompt-user">surya@kali</span><span class="prompt-sep">:</span><span class="prompt-path">${escapeHTML(currentTermDir)}</span><span class="prompt-symbol">$</span>
+        <span class="prompt-typed">${escapeHTML(cmd)}</span>
+      `;
+      heroOutputEl.appendChild(echoLine);
+
+      // Parse command and arguments
+      const parts = cmd.split(/\s+/);
+      const root = parts[0].toLowerCase();
+      const arg = parts.slice(1).join(' ').trim().toLowerCase();
+
+      handleCommandDispatch(root, arg, cmd);
+
+      if (heroTermInput) heroTermInput.value = '';
+      if (heroTermBody) heroTermBody.scrollTop = heroTermBody.scrollHeight;
+    }
+
+    function handleCommandDispatch(root, arg, fullCmd) {
+      const outputDiv = document.createElement('div');
+      outputDiv.style.marginBottom = '0.5rem';
+
+      switch (root) {
+        case 'ls':
+        case 'dir':
+        case 'projects':
+          if (currentTermDir === '~') {
+            outputDiv.innerHTML = `
+              <div class="term-file-grid">
+                <div class="term-file-item dir"><span class="file-perm">drwxr-xr-x</span> <span class="file-icon">📁</span> <span class="file-name" onclick="executeTerminalCommand('cd surface-attack')">surface-attack/</span> <span class="file-desc">// Mini Pentest Framework (ASM & Port Sweep)</span></div>
+                <div class="term-file-item dir"><span class="file-perm">drwxr-xr-x</span> <span class="file-icon">📁</span> <span class="file-name" onclick="executeTerminalCommand('cd domain-security-analyzer')">domain-security-analyzer/</span> <span class="file-desc">// DNS, TLS, DMARC & Header Analyzer</span></div>
+                <div class="term-file-item dir"><span class="file-perm">drwxr-xr-x</span> <span class="file-icon">📁</span> <span class="file-name" onclick="executeTerminalCommand('cd securemail')">securemail/</span> <span class="file-desc">// AI-Powered Phishing Detection System</span></div>
+                <div class="term-file-item dir"><span class="file-perm">drwxr-xr-x</span> <span class="file-icon">📁</span> <span class="file-name" onclick="executeTerminalCommand('cd PentestPilot')">PentestPilot/</span> <span class="file-desc">// Automated Web Application Scanner</span></div>
+                <div class="term-file-item dir"><span class="file-perm">drwxr-xr-x</span> <span class="file-icon">📁</span> <span class="file-name" onclick="executeTerminalCommand('cd codex')">codex/</span> <span class="file-desc">// TypeScript Security & Exploit Helpers</span></div>
+                <div class="term-file-item dir"><span class="file-perm">drwxr-xr-x</span> <span class="file-icon">📁</span> <span class="file-name" onclick="executeTerminalCommand('cd disclosures')">disclosures/</span> <span class="file-desc">// Responsible Disclosures (relfood, coox, homebytes)</span></div>
+                <div class="term-file-item exec"><span class="file-perm">-rwxr-xr-x</span> <span class="file-icon">⚡</span> <span class="file-name" onclick="executeTerminalCommand('./whoami.sh')">whoami.sh*</span> <span class="file-desc">// Identity & Clearance Verification</span></div>
+                <div class="term-file-item file"><span class="file-perm">-rw-r--r--</span> <span class="file-icon">📄</span> <span class="file-name" onclick="executeTerminalCommand('cat about.txt')">about.txt</span> <span class="file-desc">// Student Bio & Offensive Philosophy</span></div>
+                <div class="term-file-item file"><span class="file-perm">-rw-r--r--</span> <span class="file-icon">📄</span> <span class="file-name" onclick="executeTerminalCommand('cat contact.txt')">contact.txt</span> <span class="file-desc">// Direct Security Channels</span></div>
+              </div>
+              <div class="term-msg step" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+                Tip: Click any item or type <code>cd &lt;project&gt;</code> to test that project.
+              </div>
+            `;
+          } else if (currentTermDir.includes('surface-attack')) {
+            outputDiv.innerHTML = `
+              <div class="term-file-grid">
+                <div class="term-file-item exec"><span class="file-perm">-rwxr-xr-x</span> <span>⚡</span> <span class="file-name" onclick="executeTerminalCommand('test')">surface_attack.py</span> <span class="file-desc">// Main pentest reconnaissance engine</span></div>
+                <div class="term-file-item file"><span class="file-perm">-rw-r--r--</span> <span>📄</span> <span class="file-name" onclick="executeTerminalCommand('cat README.md')">README.md</span> <span class="file-desc">// Framework documentation</span></div>
+                <div class="term-file-item file"><span class="file-perm">-rw-r--r--</span> <span>📄</span> <span class="file-name">requirements.txt</span> <span class="file-desc">// Python socket & threading deps</span></div>
+              </div>
+              <div class="term-msg step" style="font-size: 0.75rem; color: var(--neon-green); margin-top: 4px;">
+                Type <strong style="color:#fff;">'test'</strong> to launch simulation in Live Sandbox, or <strong style="color:#fff;">'cd ..'</strong> to exit.
+              </div>
+            `;
+          } else if (currentTermDir.includes('domain-security-analyzer')) {
+            outputDiv.innerHTML = `
+              <div class="term-file-grid">
+                <div class="term-file-item exec"><span class="file-perm">-rwxr-xr-x</span> <span>⚡</span> <span class="file-name" onclick="executeTerminalCommand('test')">domain_analyzer.py</span> <span class="file-desc">// DNS, TLS, DMARC evaluation tool</span></div>
+                <div class="term-file-item file"><span class="file-perm">-rw-r--r--</span> <span>📄</span> <span class="file-name" onclick="executeTerminalCommand('cat README.md')">README.md</span> <span class="file-desc">// Usage & parameter docs</span></div>
+                <div class="term-file-item file"><span class="file-perm">-rw-r--r--</span> <span>📄</span> <span class="file-name">requirements.txt</span> <span class="file-desc">// dnspython, cryptography</span></div>
+              </div>
+              <div class="term-msg step" style="font-size: 0.75rem; color: var(--neon-green); margin-top: 4px;">
+                Type <strong style="color:#fff;">'test'</strong> to run DNS audit simulation, or <strong style="color:#fff;">'cd ..'</strong> to exit.
+              </div>
+            `;
+          } else if (currentTermDir.includes('securemail')) {
+            outputDiv.innerHTML = `
+              <div class="term-file-grid">
+                <div class="term-file-item exec"><span class="file-perm">-rwxr-xr-x</span> <span>⚡</span> <span class="file-name" onclick="executeTerminalCommand('test')">app.py</span> <span class="file-desc">// Flask detection service & API</span></div>
+                <div class="term-file-item file"><span class="file-perm">-rw-r--r--</span> <span>📄</span> <span class="file-name">ml_classifier.py</span> <span class="file-desc">// Scikit-Learn MultinomialNB model</span></div>
+                <div class="term-file-item file"><span class="file-perm">-rw-r--r--</span> <span>📄</span> <span class="file-name" onclick="executeTerminalCommand('cat README.md')">README.md</span> <span class="file-desc">// AI threat engine specifications</span></div>
+              </div>
+              <div class="term-msg step" style="font-size: 0.75rem; color: var(--neon-green); margin-top: 4px;">
+                Type <strong style="color:#fff;">'test'</strong> to run AI phishing simulation, or <strong style="color:#fff;">'cd ..'</strong> to exit.
+              </div>
+            `;
+          } else if (currentTermDir.includes('disclosures')) {
+            outputDiv.innerHTML = `
+              <div class="term-file-grid">
+                <div class="term-file-item file"><span class="file-perm">-rw-r--r--</span> <span>📄</span> <span class="file-name" onclick="executeTerminalCommand('cat relfood.com')">relfood.com.md</span> <span class="file-desc">// IDOR & GraphQL Introspection [HIGH]</span></div>
+                <div class="term-file-item file"><span class="file-perm">-rw-r--r--</span> <span>📄</span> <span class="file-name" onclick="executeTerminalCommand('cat coox.in')">coox.in.md</span> <span class="file-desc">// OTP Brute-force & ATO [CRITICAL]</span></div>
+                <div class="term-file-item file"><span class="file-perm">-rw-r--r--</span> <span>📄</span> <span class="file-name" onclick="executeTerminalCommand('cat homebytes.co.in')">homebytes.co.in.md</span> <span class="file-desc">// Verbose Error Handling & Leak [MEDIUM]</span></div>
+              </div>
+            `;
+          } else {
+            outputDiv.innerHTML = `<div class="term-msg step">README.md  main.py  config.json</div>`;
+          }
+          break;
+
+        case 'cd':
+          handleCdCommand(arg, outputDiv);
+          break;
+
+        case 'test':
+        case 'run':
+        case 'scan':
+          handleTestCommand(arg, outputDiv);
+          break;
+
+        case 'cat':
+        case 'view':
+        case 'read':
+          handleCatCommand(arg, outputDiv);
+          break;
+
+        case 'disclosures':
+        case 'disclosure':
+        case 'hof':
+        case 'bounties':
+          outputDiv.innerHTML = renderDisclosuresOutput();
+          break;
+
+        case 'whoami':
+        case './whoami.sh':
+          outputDiv.innerHTML = `
+            <div class="term-block-card">
+              <div style="font-weight: 700; color: #fff; margin-bottom: 4px;">SURYA N // OFFENSIVE IDENTITY PROFILE</div>
+              <div><strong>Status:</strong> 3rd-Year B.E. Cyber Security Student</div>
+              <div><strong>College:</strong> CMS College of Engineering and Technology</div>
+              <div><strong>Primary Vectors:</strong> IDOR, GraphQL Introspection, OTP Brute-force, SQLi</div>
+              <div><strong>Clearance:</strong> RED TEAM // ETHICAL RESEARCH (CVD)</div>
+              <div><strong>Status:</strong> Ready for Web App VAPT & Security Audits</div>
+            </div>
+          `;
+          break;
+
+        case 'about':
+        case 'bio':
+          outputDiv.innerHTML = `
+            <div class="term-block-card purple">
+              <div style="font-weight: 700; color: #fff; margin-bottom: 4px;">ABOUT SURYA N</div>
+              <p>Passionate ethical security researcher and 3rd-year B.E. Cyber Security student at CMS College of Engineering and Technology. Dedicated to identifying high-impact authorization bypasses (IDOR), GraphQL schema leaks, and business logic flaws in web applications through coordinated disclosure.</p>
+            </div>
+          `;
+          break;
+
+        case 'contact':
+        case 'email':
+          outputDiv.innerHTML = `
+            <div class="term-block-card">
+              <div style="font-weight: 700; color: #fff; margin-bottom: 4px;">COMMUNICATION CHANNELS</div>
+              <div>📧 <strong>Email:</strong> <a href="mailto:suryanagalingam877@gmail.com" style="color:var(--neon-green);">suryanagalingam877@gmail.com</a></div>
+              <div>🔗 <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/surya-nagalingam" target="_blank" style="color:var(--neon-green);">linkedin.com/in/surya-nagalingam</a></div>
+              <div>🐙 <strong>GitHub:</strong> <a href="https://github.com/suryanagalingam877-code" target="_blank" style="color:var(--neon-green);">github.com/suryanagalingam877-code</a></div>
+            </div>
+          `;
+          break;
+
+        case 'clear':
+        case 'cls':
+          heroOutputEl.innerHTML = '';
+          return;
+
+        case 'scroll':
+        case 'goto':
+          handleScrollCommand(arg, outputDiv);
+          break;
+
+        case 'help':
+        default:
+          if (root !== 'help') {
+            outputDiv.innerHTML += `<div class="term-msg warn">zsh: command not found: ${escapeHTML(root)}</div>`;
+          }
+          outputDiv.innerHTML += `
+            <div class="term-block-card">
+              <div style="font-weight: 700; color: #fff; margin-bottom: 6px;">AVAILABLE BASH / ZSH COMMANDS</div>
+              <div><strong style="color:var(--neon-green);">ls</strong> : List all projects, directories, and files</div>
+              <div><strong style="color:var(--neon-green);">cd &lt;project&gt;</strong> : Navigate into project directory (e.g. <code>cd surface-attack</code>)</div>
+              <div><strong style="color:var(--neon-green);">test [project]</strong> : Run interactive live scan in the Sandbox</div>
+              <div><strong style="color:var(--neon-green);">disclosures</strong> : View responsible disclosures (relfood, coox, homebytes)</div>
+              <div><strong style="color:var(--neon-green);">cat &lt;file&gt;</strong> : Read file contents (e.g. <code>cat about.txt</code>, <code>cat contact.txt</code>)</div>
+              <div><strong style="color:var(--neon-green);">whoami</strong> : Verify security identity & clearance level</div>
+              <div><strong style="color:var(--neon-green);">clear</strong> : Clear terminal screen</div>
+              <div><strong style="color:var(--neon-green);">scroll &lt;sec&gt;</strong> : Jump to page section (e.g. <code>scroll sandbox</code>, <code>scroll projects</code>)</div>
+            </div>
+          `;
+          break;
+      }
+
+      heroOutputEl.appendChild(outputDiv);
+    }
+
+    function handleCdCommand(target, outputDiv) {
+      const clean = target.replace(/^~\/?/, '').replace(/\/$/, '').trim();
+
+      if (!clean || clean === '..' || clean === '~') {
+        currentTermDir = '~';
+        updatePromptPath();
+        outputDiv.innerHTML = `<div class="term-msg step">[📁] Returned to home root (~)</div>`;
+        return;
+      }
+
+      if (clean === 'surface-attack') {
+        currentTermDir = '~/surface-attack';
+        updatePromptPath();
+        outputDiv.innerHTML = `
+          <div class="term-block-card">
+            <div style="font-weight: 700; color: #fff;">[📁] Entered: ~/surface-attack</div>
+            <div>Mini Pentest Framework (Python 3 / Multi-threaded ASM Engine).</div>
+            <div style="margin-top: 6px;">
+              <button class="term-chip" onclick="executeTerminalCommand('test')">🚀 test surface-attack</button>
+              <button class="term-chip" onclick="executeTerminalCommand('cat README.md')">📄 cat README.md</button>
+              <button class="term-chip purple" onclick="executeTerminalCommand('cd ..')">🔙 cd ..</button>
+            </div>
+          </div>
+        `;
+      } else if (clean === 'domain-security-analyzer') {
+        currentTermDir = '~/domain-security-analyzer';
+        updatePromptPath();
+        outputDiv.innerHTML = `
+          <div class="term-block-card">
+            <div style="font-weight: 700; color: #fff;">[📁] Entered: ~/domain-security-analyzer</div>
+            <div>DNS, SSL/TLS, DMARC, DKIM, and HTTP Security Headers Inspector.</div>
+            <div style="margin-top: 6px;">
+              <button class="term-chip" onclick="executeTerminalCommand('test')">🚀 test domain-security-analyzer</button>
+              <button class="term-chip" onclick="executeTerminalCommand('cat README.md')">📄 cat README.md</button>
+              <button class="term-chip purple" onclick="executeTerminalCommand('cd ..')">🔙 cd ..</button>
+            </div>
+          </div>
+        `;
+      } else if (clean === 'securemail') {
+        currentTermDir = '~/securemail';
+        updatePromptPath();
+        outputDiv.innerHTML = `
+          <div class="term-block-card">
+            <div style="font-weight: 700; color: #fff;">[📁] Entered: ~/securemail</div>
+            <div>AI Phishing Email Detector (Flask, Scikit-Learn NLP & URL analysis).</div>
+            <div>Live App: <a href="https://securemail-mkt6.onrender.com" target="_blank" style="color:var(--neon-green);">securemail-mkt6.onrender.com</a></div>
+            <div style="margin-top: 6px;">
+              <button class="term-chip" onclick="executeTerminalCommand('test')">🚀 test securemail</button>
+              <button class="term-chip" onclick="executeTerminalCommand('cat README.md')">📄 cat README.md</button>
+              <button class="term-chip purple" onclick="executeTerminalCommand('cd ..')">🔙 cd ..</button>
+            </div>
+          </div>
+        `;
+      } else if (clean === 'pentestpilot') {
+        currentTermDir = '~/PentestPilot';
+        updatePromptPath();
+        outputDiv.innerHTML = `
+          <div class="term-block-card">
+            <div style="font-weight: 700; color: #fff;">[📁] Entered: ~/PentestPilot</div>
+            <div>Python Automated Web Penetration Testing Suite.</div>
+            <div style="margin-top: 6px;"><button class="term-chip purple" onclick="executeTerminalCommand('cd ..')">🔙 cd ..</button></div>
+          </div>
+        `;
+      } else if (clean === 'codex') {
+        currentTermDir = '~/codex';
+        updatePromptPath();
+        outputDiv.innerHTML = `
+          <div class="term-block-card">
+            <div style="font-weight: 700; color: #fff;">[📁] Entered: ~/codex</div>
+            <div>TypeScript security payload utility and exploit library.</div>
+            <div style="margin-top: 6px;"><button class="term-chip purple" onclick="executeTerminalCommand('cd ..')">🔙 cd ..</button></div>
+          </div>
+        `;
+      } else if (clean === 'disclosures') {
+        currentTermDir = '~/disclosures';
+        updatePromptPath();
+        outputDiv.innerHTML = `
+          <div class="term-block-card amber">
+            <div style="font-weight: 700; color: #fff;">[📁] Entered: ~/disclosures</div>
+            <div>Vulnerabilities ethically reported and verified under CVD.</div>
+            <div style="margin-top: 6px;">
+              <button class="term-chip purple" onclick="executeTerminalCommand('cat relfood.com')">relfood.com</button>
+              <button class="term-chip purple" onclick="executeTerminalCommand('cat coox.in')">coox.in</button>
+              <button class="term-chip purple" onclick="executeTerminalCommand('cat homebytes.co.in')">homebytes.co.in</button>
+              <button class="term-chip" onclick="executeTerminalCommand('cd ..')">🔙 cd ..</button>
+            </div>
+          </div>
+        `;
+      } else {
+        outputDiv.innerHTML = `<div class="term-msg warn">cd: no such file or directory: ${escapeHTML(target)}</div>`;
+      }
+    }
+
+    function handleTestCommand(arg, outputDiv) {
+      let targetTool = '';
+
+      if (arg.includes('surface')) {
+        targetTool = 'surface-attack';
+      } else if (arg.includes('domain') || arg.includes('dns')) {
+        targetTool = 'domain-security-analyzer';
+      } else if (arg.includes('mail') || arg.includes('phish') || arg.includes('securemail')) {
+        targetTool = 'securemail';
+      } else if (currentTermDir.includes('surface-attack')) {
+        targetTool = 'surface-attack';
+      } else if (currentTermDir.includes('domain-security-analyzer')) {
+        targetTool = 'domain-security-analyzer';
+      } else if (currentTermDir.includes('securemail')) {
+        targetTool = 'securemail';
+      } else {
+        outputDiv.innerHTML = `
+          <div class="term-block-card">
+            <div><strong>Usage:</strong> <code>test &lt;project&gt;</code></div>
+            <div style="margin-top:4px;">Available simulation targets:</div>
+            <div style="margin-top:6px; display:flex; gap:0.4rem; flex-wrap:wrap;">
+              <button class="term-chip" onclick="executeTerminalCommand('test surface-attack')">test surface-attack</button>
+              <button class="term-chip" onclick="executeTerminalCommand('test domain-security-analyzer')">test domain-security-analyzer</button>
+              <button class="term-chip" onclick="executeTerminalCommand('test securemail')">test securemail</button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      outputDiv.innerHTML = `
+        <div class="term-msg success">[🚀] Launching interactive simulation for ${targetTool}...</div>
+        <div class="term-msg step">[*] Synchronizing parameters with Live Sandbox engine...</div>
+        <div class="term-msg step" style="color:var(--neon-green);">[✔] Live Sandbox loaded below. Executing automated test suite!</div>
+      `;
+
+      switchSandboxTool(targetTool);
+      setTimeout(() => {
+        scrollToSandbox();
+        setTimeout(runSandboxScan, 400);
+      }, 300);
+    }
+
+    function handleCatCommand(target, outputDiv) {
+      const file = target.toLowerCase().replace(/\.md$/, '').replace(/\.txt$/, '').trim();
+
+      if (file === 'about') {
+        outputDiv.innerHTML = `
+          <div class="term-block-card">
+            <strong>about.txt:</strong><br>
+            Surya N — 3rd-year B.E. Cyber Security Student at CMS College of Engineering and Technology.<br>
+            Focused on web application penetration testing, API security (OWASP API Top 10), and automated attack surface exploration.
+          </div>
+        `;
+      } else if (file === 'contact') {
+        outputDiv.innerHTML = `
+          <div class="term-block-card">
+            <strong>contact.txt:</strong><br>
+            Email: suryanagalingam877@gmail.com<br>
+            LinkedIn: https://www.linkedin.com/in/surya-nagalingam<br>
+            GitHub: https://github.com/suryanagalingam877-code
+          </div>
+        `;
+      } else if (file === 'relfood' || file === 'relfood.com') {
+        outputDiv.innerHTML = `
+          <div class="term-block-card amber">
+            <strong>relfood.com.md [SEVERITY: HIGH - CVSS 8.2]:</strong><br>
+            • Vulnerability: Insecure Direct Object Reference (IDOR) & GraphQL Introspection<br>
+            • Impact: Unauthorized order and profile record extraction, complete GraphQL backend schema disclosure<br>
+            • Status: Responsibly reported, verified, and mitigated.
+          </div>
+        `;
+      } else if (file === 'coox' || file === 'coox.in') {
+        outputDiv.innerHTML = `
+          <div class="term-block-card amber">
+            <strong>coox.in.md [SEVERITY: CRITICAL - CVSS 9.1]:</strong><br>
+            • Vulnerability: OTP Brute-Force & Full Account Takeover (ATO)<br>
+            • Impact: Bypassed rate limiting on OTP verification endpoint, enabling arbitrary session hijacking<br>
+            • Status: Acknowledged in Bug Bounty program, remediated.
+          </div>
+        `;
+      } else if (file === 'homebytes' || file === 'homebytes.co.in') {
+        outputDiv.innerHTML = `
+          <div class="term-block-card amber">
+            <strong>homebytes.co.in.md [SEVERITY: MEDIUM - CVSS 5.3]:</strong><br>
+            • Vulnerability: Verbose Debug Error Handling & Database Schema Leak<br>
+            • Impact: Stack trace disclosures revealed internal table names and environment configurations<br>
+            • Status: Responsibly reported and secured.
+          </div>
+        `;
+      } else if (file === 'readme' || file === 'readme.md') {
+        if (currentTermDir.includes('surface')) {
+          outputDiv.innerHTML = `<div class="term-block-card"><strong>surface-attack README:</strong> Mini Pentest Framework in Python for multi-threaded host discovery, port enumeration (22, 80, 443, 5000, 9200), and API attack surface mapping.</div>`;
+        } else if (currentTermDir.includes('domain')) {
+          outputDiv.innerHTML = `<div class="term-block-card"><strong>domain-security-analyzer README:</strong> Python reconnaissance tool evaluating DNS records (A/AAAA/MX/NS), SPF, DMARC, SSL/TLS 1.3 certificates, and HTTP security headers.</div>`;
+        } else if (currentTermDir.includes('securemail')) {
+          outputDiv.innerHTML = `<div class="term-block-card"><strong>securemail README:</strong> AI-powered phishing email detection system leveraging Flask, Scikit-Learn TF-IDF tokenization, URL reputation heuristics, and DNS validation.</div>`;
+        } else {
+          outputDiv.innerHTML = `<div class="term-block-card">Surya N Security Portfolio — Built with modern cyberpunk tech styling, interactive shell, and live security sandbox simulations.</div>`;
+        }
+      } else if (file === 'disclosures') {
+        outputDiv.innerHTML = renderDisclosuresOutput();
+      } else {
+        outputDiv.innerHTML = `<div class="term-msg warn">cat: ${escapeHTML(target)}: No such file</div>`;
+      }
+    }
+
+    function renderDisclosuresOutput() {
+      return `
+        <div class="term-block-card amber">
+          <div style="font-weight: 700; color: #fff; margin-bottom: 6px;">COORDINATED VULNERABILITY DISCLOSURES</div>
+          <div style="border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 6px; margin-bottom: 6px;">
+            <strong style="color:#fff;">1. relfood.com</strong> <span class="badge badge-red" style="font-size:0.65rem;">HIGH CVSS 8.2</span><br>
+            <span style="color:var(--text-secondary);">IDOR (Order & Customer Profile Disclosure) & GraphQL Introspection Schema Leak</span><br>
+            <span style="color:var(--neon-green); font-size:0.75rem;">Status: Triaged & Mitigated [RESPONSIBLY DISCLOSED]</span>
+          </div>
+          <div style="border-bottom: 1px dashed rgba(255,255,255,0.15); padding-bottom: 6px; margin-bottom: 6px;">
+            <strong style="color:#fff;">2. coox.in</strong> <span class="badge badge-red" style="font-size:0.65rem;">CRITICAL CVSS 9.1</span><br>
+            <span style="color:var(--text-secondary);">OTP Brute-force & Full Account Takeover (ATO)</span><br>
+            <span style="color:var(--neon-green); font-size:0.75rem;">Status: Validated via Bounty Program & Patched</span>
+          </div>
+          <div>
+            <strong style="color:#fff;">3. homebytes.co.in</strong> <span class="badge badge-purple" style="font-size:0.65rem;">MEDIUM CVSS 5.3</span><br>
+            <span style="color:var(--text-secondary);">Verbose Debug Error Handling & Database Schema Information Leak</span><br>
+            <span style="color:var(--neon-green); font-size:0.75rem;">Status: Reported & Remediated</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleScrollCommand(sec, outputDiv) {
+      const clean = sec.toLowerCase().trim();
+      let targetId = '';
+      if (clean.includes('sandbox')) targetId = 'sandbox';
+      else if (clean.includes('project') || clean.includes('arsenal')) targetId = 'projects';
+      else if (clean.includes('disclosure') || clean.includes('hof')) targetId = 'disclosures';
+      else if (clean.includes('about')) targetId = 'about';
+      else if (clean.includes('stack') || clean.includes('tool')) targetId = 'stack';
+      else if (clean.includes('contact')) targetId = 'contact';
+
+      if (targetId) {
+        const el = document.getElementById(targetId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+          outputDiv.innerHTML = `<div class="term-msg success">[✔] Scrolled to section: #${targetId}</div>`;
+        }
+      } else {
+        outputDiv.innerHTML = `<div class="term-msg warn">scroll: Unknown section. Try 'sandbox', 'projects', 'disclosures', 'about', or 'contact'.</div>`;
+      }
+    }
+
+    // Interactive Keyboard Event Listener for Terminal Input
+    if (heroTermInput) {
+      heroTermInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          executeTerminalCommand(heroTermInput.value);
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (commandHistory.length && historyIndex > 0) {
+            historyIndex--;
+            heroTermInput.value = commandHistory[historyIndex];
+          }
+        } else if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (historyIndex < commandHistory.length - 1) {
+            historyIndex++;
+            heroTermInput.value = commandHistory[historyIndex];
+          } else {
+            historyIndex = commandHistory.length;
+            heroTermInput.value = '';
+          }
+        }
+      });
     }
 
     if (heroReplayBtn) {
